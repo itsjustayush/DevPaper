@@ -37,3 +37,4 @@ export const AstryxProvider: React.FC<AstryxProviderProps> = ({ children }) => {
     </div>
   );
 };
+

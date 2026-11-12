@@ -101,3 +101,4 @@ export const WindowHeader: React.FC<WindowHeaderProps> = ({
     </div>
   );
 };
+

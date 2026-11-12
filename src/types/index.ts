@@ -187,3 +187,4 @@ export interface DevPaperState {
   docAuthor: string;
   docRepo: string;
 }
+

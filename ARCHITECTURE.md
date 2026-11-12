@@ -88,3 +88,4 @@ Lines maintain accurate original source file indices across page boundaries (e.g
 1. Captures all pages sequentially as `image/png` base64 strings or SVG XML strings.
 2. Formats sequential zero-padded file names: `${filename}-page-01.png`, `${filename}-page-02.png`, etc.
 3. Compresses the archive client-side using `JSZip` into a downloadable `.zip` file.
+

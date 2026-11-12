@@ -110,3 +110,4 @@ DevPaper draws direct inspiration and architecture from:
 ## 📄 License
 
 MIT © [DevPaper Contributors](LICENSE)
+

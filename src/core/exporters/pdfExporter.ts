@@ -89,3 +89,4 @@ export async function exportElementsAsPdf(
   pdf.save(`${fileName}.pdf`);
   return pdf.output('blob');
 }
+

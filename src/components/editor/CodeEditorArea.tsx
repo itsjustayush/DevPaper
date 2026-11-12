@@ -135,3 +135,4 @@ export const CodeEditorArea: React.FC<CodeEditorAreaProps> = ({
     </div>
   );
 };
+

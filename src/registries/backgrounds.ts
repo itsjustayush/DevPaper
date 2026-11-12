@@ -89,3 +89,4 @@ export function getBackgroundById(id: string): BackgroundPreset {
 export function listBackgrounds(): BackgroundPreset[] {
   return Object.values(BACKGROUND_REGISTRY);
 }
+

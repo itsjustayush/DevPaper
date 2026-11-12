@@ -40,3 +40,4 @@ export const FrameSelector: React.FC<FrameSelectorProps> = ({
     </div>
   );
 };
+

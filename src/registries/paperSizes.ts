@@ -175,3 +175,4 @@ export function registerPaperSize(preset: PaperPreset): void {
   }
   PAPER_REGISTRY[preset.id] = preset;
 }
+

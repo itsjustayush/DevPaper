@@ -84,3 +84,4 @@ export function registerFrame(frame: FrameDefinition): void {
   }
   FRAME_REGISTRY[frame.id] = frame;
 }
+

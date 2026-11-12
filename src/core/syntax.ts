@@ -153,3 +153,4 @@ export function tokenizeCodeLine(line: string, language: string, theme: ThemeDef
 
   return tokens.length > 0 ? tokens : [{ content: line, color: theme.foreground }];
 }
+

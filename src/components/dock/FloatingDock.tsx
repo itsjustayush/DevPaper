@@ -377,3 +377,4 @@ export const FloatingDock: React.FC<FloatingDockProps> = ({
     </div>
   );
 };
+

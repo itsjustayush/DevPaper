@@ -250,3 +250,4 @@ function detectDiff(text: string): { diffType: DiffType; cleanText: string } {
   }
   return { diffType: 'none', cleanText: text };
 }
+

@@ -186,3 +186,4 @@ export const SnippetCanvas = forwardRef<SnippetCanvasHandle, SnippetCanvasProps>
 );
 
 SnippetCanvas.displayName = 'SnippetCanvas';
+

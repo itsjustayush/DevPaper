@@ -109,3 +109,4 @@ export function registerFont(font: FontDefinition): void {
   }
   FONT_REGISTRY[font.id] = font;
 }
+

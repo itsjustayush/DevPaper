@@ -30,3 +30,4 @@ export async function exportElementAsSvg(
 
   return dataUrl;
 }
+

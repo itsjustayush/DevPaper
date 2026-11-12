@@ -122,3 +122,4 @@ Add test cases in `tests/registries.test.ts` or `tests/paginator.test.ts` to ver
 1. **Keep Subsystems Decoupled**: Never import UI components inside `src/core/paginator.ts` or `src/core/exporters/`.
 2. **Strict Typing**: All exported functions must include complete TypeScript type signatures.
 3. **Branch Naming**: Use feature branches like `feat/theme-monokai` or `fix/pagination-boundary`.
+

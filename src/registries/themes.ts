@@ -395,3 +395,4 @@ export function registerTheme(theme: ThemeDefinition): void {
   }
   THEME_REGISTRY[theme.id] = theme;
 }
+

@@ -96,3 +96,4 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
     </div>
   );
 };
+
