@@ -17,7 +17,7 @@ import {
   Monitor,
   Share2,
 } from 'lucide-react';
-import { PaperPreset, PageOrientation, PaginatorMargins } from '@/types';
+import { PaperPreset, PageOrientation } from '@/types';
 import { PAPER_REGISTRY } from '@/registries/paperSizes';
 
 interface ExportStudioModalProps {
@@ -36,8 +36,8 @@ interface ExportStudioModalProps {
   onCopyClipboard: () => Promise<void>;
   onExportPng: (scale: number) => Promise<void>;
   onExportSvg: () => Promise<void>;
-  onExportPdf: () => Promise<void>;
-  onExportZip: (format: 'png' | 'svg') => Promise<void>;
+  onExportPdf: (onProgress?: (current: number, total: number) => void) => Promise<void>;
+  onExportZip: (format: 'png' | 'svg', onProgress?: (current: number, total: number) => void) => Promise<void>;
 }
 
 export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
@@ -61,6 +61,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
 }) => {
   const [resolution, setResolution] = useState<number>(2); // 1x, 2x, 3x
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<'all' | 'print' | 'presentation' | 'social'>('all');
 
@@ -97,11 +98,13 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
   const handleExecute = async (actionKey: string, fn: () => Promise<void>) => {
     try {
       setLoadingAction(actionKey);
+      setProgress(null);
       await fn();
     } catch (err) {
       console.error(`Export failed for ${actionKey}:`, err);
     } finally {
       setLoadingAction(null);
+      setProgress(null);
     }
   };
 
@@ -133,7 +136,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition cursor-pointer"
             title="Close (Esc)"
           >
             <X className="w-4 h-4" />
@@ -187,7 +190,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-2 py-0.5 rounded capitalize transition ${
+                    className={`px-2 py-0.5 rounded capitalize transition cursor-pointer ${
                       activeCategory === cat
                         ? 'bg-zinc-800 text-zinc-100 font-medium'
                         : 'text-zinc-400 hover:text-zinc-200'
@@ -207,7 +210,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
                   <button
                     key={preset.id}
                     onClick={() => onSelectPaper(preset.id)}
-                    className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-left transition ${
+                    className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-left transition cursor-pointer ${
                       isSelected
                         ? 'bg-emerald-500/10 border-emerald-500/40 text-zinc-100'
                         : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-300'
@@ -249,7 +252,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
                   <div className="flex items-center gap-1 bg-zinc-900 p-0.5 rounded-lg border border-zinc-800">
                     <button
                       onClick={() => onSelectOrientation('portrait')}
-                      className={`px-2.5 py-1 rounded transition ${
+                      className={`px-2.5 py-1 rounded transition cursor-pointer ${
                         orientation === 'portrait'
                           ? 'bg-zinc-800 text-zinc-100 font-medium'
                           : 'text-zinc-400 hover:text-zinc-200'
@@ -259,7 +262,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
                     </button>
                     <button
                       onClick={() => onSelectOrientation('landscape')}
-                      className={`px-2.5 py-1 rounded transition ${
+                      className={`px-2.5 py-1 rounded transition cursor-pointer ${
                         orientation === 'landscape'
                           ? 'bg-zinc-800 text-zinc-100 font-medium'
                           : 'text-zinc-400 hover:text-zinc-200'
@@ -300,7 +303,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
                 <button
                   key={res.scale}
                   onClick={() => setResolution(res.scale)}
-                  className={`p-2.5 rounded-xl border text-center transition ${
+                  className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                     resolution === res.scale
                       ? 'bg-emerald-500/10 border-emerald-500/40 text-zinc-100'
                       : 'bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 text-zinc-400'
@@ -348,7 +351,7 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
               ) : (
                 <ImageIcon className="w-3.5 h-3.5 text-zinc-400" />
               )}
-              <span>PNG ({resolution}x)</span>
+              <span>{loadingAction === 'png' ? 'Generating...' : `PNG (${resolution}x)`}</span>
             </button>
 
             {/* Download SVG */}
@@ -362,38 +365,48 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
               ) : (
                 <Download className="w-3.5 h-3.5 text-zinc-400" />
               )}
-              <span>SVG</span>
+              <span>{loadingAction === 'svg' ? 'Generating...' : 'SVG'}</span>
             </button>
 
             {/* Download Multi-Page PDF */}
             <button
-              onClick={() => handleExecute('pdf', () => onExportPdf())}
+              onClick={() => handleExecute('pdf', () => onExportPdf((current, total) => setProgress({ current, total })))}
               disabled={loadingAction !== null}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-semibold shadow-lg shadow-emerald-500/10 transition cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-semibold shadow-lg shadow-emerald-500/10 transition cursor-pointer disabled:opacity-50 min-w-[130px] justify-center"
               title="Print-ready true paper vector PDF"
             >
               {loadingAction === 'pdf' ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-950" />
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-950" />
+                  <span>{progress ? `Page ${progress.current}/${progress.total}` : 'Rendering...'}</span>
+                </>
               ) : (
-                <FileText className="w-3.5 h-3.5 text-zinc-950" />
+                <>
+                  <FileText className="w-3.5 h-3.5 text-zinc-950" />
+                  <span>Download PDF</span>
+                </>
               )}
-              <span>Download PDF</span>
             </button>
 
             {/* Download ZIP Archive (for multi-page) */}
             {isMultiPage && (
               <button
-                onClick={() => handleExecute('zip', () => onExportZip('png'))}
+                onClick={() => handleExecute('zip', () => onExportZip('png', (current, total) => setProgress({ current, total })))}
                 disabled={loadingAction !== null}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition cursor-pointer disabled:opacity-50 min-w-[110px] justify-center"
                 title="Bundle all pages into a ZIP archive"
               >
                 {loadingAction === 'zip' ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                    <span>{progress ? `${progress.current}/${progress.total}` : 'Packaging...'}</span>
+                  </>
                 ) : (
-                  <Archive className="w-3.5 h-3.5 text-amber-400" />
+                  <>
+                    <Archive className="w-3.5 h-3.5 text-amber-400" />
+                    <span>ZIP Pages</span>
+                  </>
                 )}
-                <span>ZIP Pages</span>
               </button>
             )}
           </div>
@@ -402,4 +415,3 @@ export const ExportStudioModal: React.FC<ExportStudioModalProps> = ({
     </div>
   );
 };
-

@@ -175,11 +175,10 @@ export const WindowHeader: React.FC<WindowHeaderProps> = ({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectLanguage(item.id)}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono text-left transition ${
-                      isSelected
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono text-left transition ${isSelected
                         ? 'bg-emerald-500/10 text-emerald-400 font-semibold'
                         : 'text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100'
-                    }`}
+                      }`}
                   >
                     <span>{item.label}</span>
                     {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}

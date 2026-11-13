@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { toBlob, toSvg } from 'html-to-image';
-import { downloadBlob, FAST_EXPORT_OPTIONS } from './downloadHelper';
+import { downloadBlob, yieldToEventLoop, FAST_EXPORT_OPTIONS } from './downloadHelper';
 
 export interface ZipExportOptions {
   fileName?: string;
@@ -15,9 +15,9 @@ export interface FileArchiveItem {
 }
 
 /**
- * Ultra-Fast Multi-Page Sequential ZIP Archive Exporter
+ * Ultra-Fast Non-Blocking Sequential ZIP Archive Exporter
  * 
- * Uses parallel page rendering and zero-overhead binary packaging.
+ * Uses chunked event-loop yielding and instant 'STORE' binary packaging.
  */
 export async function exportElementsAsZip(
   pageElements: HTMLElement[],
@@ -38,39 +38,33 @@ export async function exportElementsAsZip(
   const folder = zip.folder(fileName) || zip;
   const total = pageElements.length;
 
-  if (format === 'svg') {
-    // Concurrent SVG extraction
-    const svgPromises = pageElements.map(async (pageElement, idx) => {
+  for (let i = 0; i < total; i++) {
+    // Yield to browser event loop
+    await yieldToEventLoop();
+
+    if (onProgress) {
+      onProgress(i + 1, total);
+    }
+
+    const pageElement = pageElements[i];
+    const pageIndexStr = String(i + 1).padStart(2, '0');
+
+    if (format === 'svg') {
       const dataUrl = await toSvg(pageElement, FAST_EXPORT_OPTIONS);
       const svgText = decodeURIComponent(dataUrl.replace(/^data:image\/svg\+xml;charset=utf-8,/, ''));
-      onProgress?.(idx + 1, total);
-      return { index: idx, content: svgText };
-    });
-
-    const svgs = await Promise.all(svgPromises);
-    for (const item of svgs) {
-      const pageIndexStr = String(item.index + 1).padStart(2, '0');
-      folder.file(`${fileName}-page-${pageIndexStr}.svg`, item.content);
-    }
-  } else {
-    // Concurrent binary Blob rendering for PNG (5x faster than base64 strings)
-    const blobPromises = pageElements.map(async (pageElement, idx) => {
+      folder.file(`${fileName}-page-${pageIndexStr}.svg`, svgText);
+    } else {
       const blob = await toBlob(pageElement, {
         ...FAST_EXPORT_OPTIONS,
         pixelRatio,
       });
-      onProgress?.(idx + 1, total);
-      return { index: idx, blob };
-    });
-
-    const blobs = await Promise.all(blobPromises);
-    for (const item of blobs) {
-      if (item.blob) {
-        const pageIndexStr = String(item.index + 1).padStart(2, '0');
-        folder.file(`${fileName}-page-${pageIndexStr}.png`, item.blob);
+      if (blob) {
+        folder.file(`${fileName}-page-${pageIndexStr}.png`, blob);
       }
     }
   }
+
+  await yieldToEventLoop();
 
   // Fast ZIP creation: PNGs are already compressed, so STORE is virtually instant (<20ms)
   const content = await zip.generateAsync({
@@ -96,26 +90,22 @@ export async function exportProjectAsZip(
 
   const zip = new JSZip();
 
-  const filePromises = files.map(async (fileItem) => {
+  for (const fileItem of files) {
     const fileFolder = zip.folder(fileItem.fileName) || zip;
-    const blobPromises = fileItem.pageElements.map(async (el, idx) => {
-      const blob = await toBlob(el, {
+    for (let i = 0; i < fileItem.pageElements.length; i++) {
+      await yieldToEventLoop();
+      const pageIndexStr = String(i + 1).padStart(2, '0');
+      const blob = await toBlob(fileItem.pageElements[i], {
         ...FAST_EXPORT_OPTIONS,
         pixelRatio,
       });
-      return { index: idx, blob };
-    });
-
-    const pageBlobs = await Promise.all(blobPromises);
-    for (const pb of pageBlobs) {
-      if (pb.blob) {
-        const pageIndexStr = String(pb.index + 1).padStart(2, '0');
-        fileFolder.file(`${fileItem.fileName}-page-${pageIndexStr}.png`, pb.blob);
+      if (blob) {
+        fileFolder.file(`${fileItem.fileName}-page-${pageIndexStr}.png`, blob);
       }
     }
-  });
+  }
 
-  await Promise.all(filePromises);
+  await yieldToEventLoop();
 
   const content = await zip.generateAsync({
     type: 'blob',

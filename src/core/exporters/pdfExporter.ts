@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
-import { toPng } from 'html-to-image';
+import { toJpeg } from 'html-to-image';
 import { PaperPreset, PageOrientation, DocumentMetadata } from '@/types';
-import { downloadBlob, FAST_EXPORT_OPTIONS } from './downloadHelper';
+import { downloadBlob, yieldToEventLoop, FAST_EXPORT_OPTIONS } from './downloadHelper';
 
 export interface PdfExportOptions {
   paperSize: PaperPreset;
@@ -13,10 +13,11 @@ export interface PdfExportOptions {
 }
 
 /**
- * Ultra-Fast Multi-Page Vector/High-DPI PDF Exporter
+ * Ultra-Fast Non-Blocking Multi-Page PDF Exporter
  * 
- * Uses concurrent parallel page rendering and fast compression to generate
- * multi-page documents in sub-second time.
+ * Uses chunked event-loop yielding and native JPEG stream embedding in jsPDF.
+ * Eliminates browser thread freezes ("Page Unresponsive") and renders
+ * long multi-page documents (15-50+ pages) smoothly in real-time.
  */
 export async function exportElementsAsPdf(
   pageElements: HTMLElement[],
@@ -69,25 +70,34 @@ export async function exportElementsAsPdf(
 
   const total = pageElements.length;
 
-  // Concurrent parallel snapshot rendering of all sheets
-  const renderPromises = pageElements.map(async (element, idx) => {
-    const dataUrl = await toPng(element, {
+  // Process pages sequentially with event-loop yielding to guarantee 60fps UI responsiveness
+  for (let i = 0; i < total; i++) {
+    // Yield to the browser event loop so Chrome stays responsive
+    await yieldToEventLoop();
+
+    if (onProgress) {
+      onProgress(i + 1, total);
+    }
+
+    const element = pageElements[i];
+
+    // toJpeg at 0.95 quality embeds directly into PDF via DCT stream with zero JS re-compression overhead
+    const dataUrl = await toJpeg(element, {
       ...FAST_EXPORT_OPTIONS,
+      quality: 0.95,
       pixelRatio,
     });
-    onProgress?.(idx + 1, total);
-    return dataUrl;
-  });
 
-  const renderedPages = await Promise.all(renderPromises);
-
-  // Assemble into PDF
-  for (let i = 0; i < renderedPages.length; i++) {
     if (i > 0) {
       pdf.addPage([widthMm, heightMm], orientation);
     }
-    pdf.addImage(renderedPages[i], 'PNG', 0, 0, widthMm, heightMm, undefined, 'FAST');
+
+    // Embed image into page
+    pdf.addImage(dataUrl, 'JPEG', 0, 0, widthMm, heightMm, undefined, 'FAST');
   }
+
+  // Final yield before PDF assembly and download
+  await yieldToEventLoop();
 
   const blob = pdf.output('blob');
   downloadBlob(blob, `${fileName}.pdf`);

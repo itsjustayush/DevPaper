@@ -248,33 +248,48 @@ export default function DevPaperHome() {
 
   // Quick Copy Action
   const handleCopyClipboard = async () => {
-    const canvasEl = canvasRef.current?.getCanvasElement();
-    if (!canvasEl) throw new Error('Canvas element not available.');
-    await copyImageToClipboard(canvasEl, 2);
+    const isMultiPage = documentData.totalPages > 1 && paperSize.id !== 'auto';
+    const pageEls = canvasRef.current?.getPageElements();
+    const targetEl = isMultiPage && pageEls && pageEls.length > 0
+      ? pageEls[0]
+      : canvasRef.current?.getCanvasElement();
+
+    if (!targetEl) throw new Error('Canvas element not available.');
+    await copyImageToClipboard(targetEl, 2);
     setQuickCopied(true);
     setTimeout(() => setQuickCopied(false), 2000);
   };
 
   // Export handlers
   const handleExportPng = async (scale: number) => {
-    const canvasEl = canvasRef.current?.getCanvasElement();
-    if (!canvasEl) throw new Error('Canvas element not available.');
-    await exportElementAsImage(canvasEl, {
+    const isMultiPage = documentData.totalPages > 1 && paperSize.id !== 'auto';
+    const pageEls = canvasRef.current?.getPageElements();
+    const targetEl = isMultiPage && pageEls && pageEls.length > 0
+      ? pageEls[0]
+      : canvasRef.current?.getCanvasElement();
+
+    if (!targetEl) throw new Error('Canvas element not available.');
+    await exportElementAsImage(targetEl, {
       pixelRatio: scale,
-      fileName: fileName.replace(/\.[^/.]+$/, ''),
+      fileName: isMultiPage ? `${fileName.replace(/\.[^/.]+$/, '')}-page-01` : fileName.replace(/\.[^/.]+$/, ''),
       format: 'png',
     });
   };
 
   const handleExportSvg = async () => {
-    const canvasEl = canvasRef.current?.getCanvasElement();
-    if (!canvasEl) throw new Error('Canvas element not available.');
-    await exportElementAsSvg(canvasEl, {
-      fileName: fileName.replace(/\.[^/.]+$/, ''),
+    const isMultiPage = documentData.totalPages > 1 && paperSize.id !== 'auto';
+    const pageEls = canvasRef.current?.getPageElements();
+    const targetEl = isMultiPage && pageEls && pageEls.length > 0
+      ? pageEls[0]
+      : canvasRef.current?.getCanvasElement();
+
+    if (!targetEl) throw new Error('Canvas element not available.');
+    await exportElementAsSvg(targetEl, {
+      fileName: isMultiPage ? `${fileName.replace(/\.[^/.]+$/, '')}-page-01` : fileName.replace(/\.[^/.]+$/, ''),
     });
   };
 
-  const handleExportPdf = async () => {
+  const handleExportPdf = async (onProgress?: (current: number, total: number) => void) => {
     const pageEls = canvasRef.current?.getPageElements();
     if (!pageEls || pageEls.length === 0) throw new Error('No pages available for PDF export.');
     await exportElementsAsPdf(pageEls, {
@@ -285,16 +300,18 @@ export default function DevPaperHome() {
         title: fileName,
         author: watermarkText,
       },
+      onProgress,
     });
   };
 
-  const handleExportZip = async (format: 'png' | 'svg') => {
+  const handleExportZip = async (format: 'png' | 'svg', onProgress?: (current: number, total: number) => void) => {
     const pageEls = canvasRef.current?.getPageElements();
     if (!pageEls || pageEls.length === 0) throw new Error('No pages available for ZIP export.');
     await exportElementsAsZip(pageEls, {
       fileName: fileName.replace(/\.[^/.]+$/, ''),
       format,
-      pixelRatio: 2.5,
+      pixelRatio: 2,
+      onProgress,
     });
   };
 
