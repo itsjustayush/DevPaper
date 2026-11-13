@@ -1,5 +1,5 @@
 import { toSvg } from 'html-to-image';
-import { saveAs } from 'file-saver';
+import { downloadBlob, FAST_EXPORT_OPTIONS } from './downloadHelper';
 
 export interface SvgExportOptions {
   fileName?: string;
@@ -7,7 +7,7 @@ export interface SvgExportOptions {
 }
 
 /**
- * Lossless SVG Exporter
+ * Ultra-Fast Lossless SVG Exporter
  */
 export async function exportElementAsSvg(
   element: HTMLElement,
@@ -15,19 +15,19 @@ export async function exportElementAsSvg(
 ): Promise<string> {
   const { fileName = 'devpaper-snippet', backgroundColor } = options;
 
+  if (typeof document !== 'undefined' && 'fonts' in document) {
+    await document.fonts.ready;
+  }
+
   const dataUrl = await toSvg(element, {
+    ...FAST_EXPORT_OPTIONS,
     backgroundColor: backgroundColor || undefined,
-    cacheBust: true,
-    style: {
-      transform: 'none',
-    },
   });
 
-  // Convert data URL to Blob for clean SVG download
+  // Extract clean SVG text
   const svgContent = decodeURIComponent(dataUrl.replace(/^data:image\/svg\+xml;charset=utf-8,/, ''));
   const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-  saveAs(blob, `${fileName}.svg`);
+  downloadBlob(blob, `${fileName}.svg`);
 
   return dataUrl;
 }
-

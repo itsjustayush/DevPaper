@@ -237,7 +237,7 @@ export const InlineCodeEditor: React.FC<InlineCodeEditorProps> = ({
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
-          className={`absolute inset-0 w-full h-full py-3 px-4 bg-transparent outline-none border-none resize-none overflow-hidden font-mono text-transparent cursor-text select-text selection:bg-emerald-500/35 selection:text-transparent ${
+          className={`devpaper-no-export absolute inset-0 w-full h-full py-3 px-4 bg-transparent outline-none border-none resize-none overflow-hidden font-mono text-transparent cursor-text select-text selection:bg-emerald-500/35 selection:text-transparent ${
             lineWrapping ? 'whitespace-pre-wrap break-words' : 'whitespace-pre overflow-x-auto'
           }`}
           style={{

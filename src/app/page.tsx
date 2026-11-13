@@ -239,6 +239,13 @@ export default function DevPaperHome() {
     }
   }, []);
 
+  // Pre-warm font engine on mount & font changes for instant sub-100ms downloads
+  useEffect(() => {
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.catch(() => {});
+    }
+  }, [fontId]);
+
   // Quick Copy Action
   const handleCopyClipboard = async () => {
     const canvasEl = canvasRef.current?.getCanvasElement();

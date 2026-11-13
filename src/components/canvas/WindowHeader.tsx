@@ -164,7 +164,7 @@ export const WindowHeader: React.FC<WindowHeaderProps> = ({
 
           {/* Language Dropdown Menu */}
           {isLangOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-44 max-h-56 overflow-y-auto custom-scrollbar bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl p-1 z-50">
+            <div className="devpaper-no-export absolute right-0 top-full mt-1.5 w-44 max-h-56 overflow-y-auto custom-scrollbar bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl p-1 z-50">
               <div className="px-2 py-1 text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">
                 Syntax Language
               </div>
