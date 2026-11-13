@@ -32,10 +32,10 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
     <div className="space-y-4">
       {/* Background Gradients & Solids */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+        <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">
           Canvas Wallpaper
         </label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
           {backgrounds.map((bg) => {
             const isSelected = bg.id === currentBgId;
             return (
@@ -43,12 +43,12 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
                 key={bg.id}
                 onClick={() => onSelectBackground(bg.id)}
                 className={`group relative h-14 rounded-xl border flex items-end p-1.5 text-left overflow-hidden transition ${
-                  isSelected ? 'border-emerald-400 ring-2 ring-emerald-400/30' : 'border-white/10 hover:border-white/30'
+                  isSelected ? 'border-emerald-400 ring-2 ring-emerald-400/30' : 'border-zinc-800 hover:border-zinc-600'
                 }`}
                 style={{ background: bg.value }}
                 title={bg.name}
               >
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition" />
+                <div className="absolute inset-0 bg-black/25 group-hover:bg-transparent transition" />
                 <span className="relative z-10 text-[10px] font-medium text-white drop-shadow truncate">
                   {bg.name}
                 </span>
@@ -63,7 +63,7 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
 
       {/* Padding Selector */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+        <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">
           Outer Canvas Padding
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -73,8 +73,8 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
               onClick={() => onChangePadding(pad)}
               className={`p-2 rounded-xl text-xs font-mono border transition ${
                 canvasPadding === pad
-                  ? 'border-emerald-400 bg-white/10 text-white font-medium'
-                  : 'border-white/5 bg-white/[0.03] text-white/60 hover:text-white'
+                  ? 'border-emerald-500/50 bg-emerald-500/10 text-zinc-100 font-medium'
+                  : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-white hover:bg-zinc-850'
               }`}
             >
               {pad}px
@@ -85,7 +85,7 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
 
       {/* Window Border Radius Slider */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs text-white/70">
+        <div className="flex items-center justify-between text-xs text-zinc-300">
           <span>Corner Radius</span>
           <span className="font-mono text-emerald-400">{borderRadius}px</span>
         </div>
@@ -96,27 +96,26 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
           step="2"
           value={borderRadius}
           onChange={(e) => onChangeBorderRadius(Number(e.target.value))}
-          className="w-full accent-emerald-400 cursor-pointer"
+          className="w-full accent-emerald-500 cursor-pointer"
         />
       </div>
 
       {/* Window Opacity Slider */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs text-white/70">
-          <span>Window Opacity</span>
+        <div className="flex items-center justify-between text-xs text-zinc-300">
+          <span>Window Transparency</span>
           <span className="font-mono text-emerald-400">{Math.round(windowOpacity * 100)}%</span>
         </div>
         <input
           type="range"
-          min="0.4"
-          max="1.0"
+          min="0.2"
+          max="1"
           step="0.05"
           value={windowOpacity}
           onChange={(e) => onChangeOpacity(Number(e.target.value))}
-          className="w-full accent-emerald-400 cursor-pointer"
+          className="w-full accent-emerald-500 cursor-pointer"
         />
       </div>
     </div>
   );
 };
-

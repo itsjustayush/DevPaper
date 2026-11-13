@@ -16,7 +16,7 @@ export const FrameSelector: React.FC<FrameSelectorProps> = ({
   const frames = listFrames();
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
       {frames.map((frame) => {
         const isSelected = frame.id === currentFrameId;
         return (
@@ -25,13 +25,13 @@ export const FrameSelector: React.FC<FrameSelectorProps> = ({
             onClick={() => onSelectFrame(frame.id)}
             className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left border transition text-xs ${
               isSelected
-                ? 'border-emerald-400 bg-white/10 text-white font-medium'
-                : 'border-white/5 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white'
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-zinc-100 font-medium'
+                : 'border-zinc-800 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-850 hover:text-white'
             }`}
           >
             <div>
-              <div className="font-medium text-white">{frame.name}</div>
-              <div className="text-[10px] text-white/40">{frame.description}</div>
+              <div className="font-medium text-zinc-100">{frame.name}</div>
+              <div className="text-[10px] text-zinc-400 mt-0.5">{frame.description}</div>
             </div>
             {isSelected && <Check className="w-4 h-4 text-emerald-400 shrink-0" />}
           </button>
@@ -40,4 +40,3 @@ export const FrameSelector: React.FC<FrameSelectorProps> = ({
     </div>
   );
 };
-

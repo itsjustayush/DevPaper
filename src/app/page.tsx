@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Navbar } from '@/components/header/Navbar';
 import { SnippetCanvas, SnippetCanvasHandle } from '@/components/canvas/SnippetCanvas';
 import { FloatingDock } from '@/components/dock/FloatingDock';
-import { CodeEditorArea } from '@/components/editor/CodeEditorArea';
+import { ExportStudioModal } from '@/components/export/ExportStudioModal';
 import { paginateCode } from '@/core/paginator';
 import { getThemeById } from '@/registries/themes';
 import { getFontById } from '@/registries/fonts';
@@ -19,8 +19,7 @@ import {
   exportElementsAsPdf,
   exportElementsAsZip,
 } from '@/core/exporters';
-import { PageOrientation, PaginatorMargins, SourceFileItem } from '@/types';
-import { ChevronDown, ChevronUp, Sliders } from 'lucide-react';
+import { PageOrientation, PaginatorMargins } from '@/types';
 
 const INITIAL_CODE = `// DevPaper — Code Presentation & Typesetting Studio
 // Transforms code into beautiful images and multi-page printable documents
@@ -67,20 +66,14 @@ export class HighThroughputPipeline<T> {
 `;
 
 export default function DevPaperHome() {
-  const [mode, setMode] = useState<'canvas' | 'codepaper'>('canvas');
+  // Primary code & file state (Unified, content-aware workspace)
+  const [code, setCode] = useState<string>(INITIAL_CODE);
+  const [fileName, setFileName] = useState<string>('pipeline.ts');
+  const [language, setLanguage] = useState<string>('typescript');
+  const [isAutoDetected, setIsAutoDetected] = useState<boolean>(true);
+  const [highlightedLines, setHighlightedLines] = useState<number[]>([]);
 
-  // Source files list for multi-file documents
-  const [files, setFiles] = useState<SourceFileItem[]>([
-    {
-      id: 'file-1',
-      name: 'pipeline.ts',
-      language: 'typescript',
-      code: INITIAL_CODE,
-    },
-  ]);
-  const [activeFileId, setActiveFileId] = useState<string>('file-1');
-
-  // Customization state
+  // Studio customization state
   const [themeId, setThemeId] = useState<string>('tokyo-night');
   const [fontId, setFontId] = useState<string>('jetbrains-mono');
   const [fontSize, setFontSize] = useState<number>(13);
@@ -100,10 +93,13 @@ export default function DevPaperHome() {
   const [lineWrapping, setLineWrapping] = useState<boolean>(false);
   const [showWatermark, setShowWatermark] = useState<boolean>(true);
   const [watermarkText, setWatermarkText] = useState<string>('DevPaper Typesetting Studio');
-  const [shareCopied, setShareCopied] = useState<boolean>(false);
-  const [showEditorDrawer, setShowEditorDrawer] = useState<boolean>(false);
 
-  // Margins for paginated document
+  // UI state
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [shareCopied, setShareCopied] = useState<boolean>(false);
+  const [quickCopied, setQuickCopied] = useState<boolean>(false);
+
+  // Document Margins
   const margins: PaginatorMargins = useMemo(() => ({
     top: 32,
     right: 32,
@@ -111,78 +107,84 @@ export default function DevPaperHome() {
     left: 32,
   }), []);
 
-  // Active file resolution
-  const activeFile = useMemo(() => {
-    return files.find((f) => f.id === activeFileId) || files[0];
-  }, [files, activeFileId]);
-
-  // Lookup registry objects
+  // Registry resolutions
   const theme = useMemo(() => getThemeById(themeId), [themeId]);
   const font = useMemo(() => getFontById(fontId), [fontId]);
   const frame = useMemo(() => getFrameById(frameId), [frameId]);
   const paperSize = useMemo(() => getPaperSizeById(paperSizeId), [paperSizeId]);
   const background = useMemo(() => getBackgroundById(backgroundId), [backgroundId]);
 
-  // Canvas Reference for export engines
+  // Canvas Reference
   const canvasRef = useRef<SnippetCanvasHandle>(null);
 
-  // Auto-switch paper preset when entering/leaving CodePaper mode
-  const handleModeChange = (newMode: 'canvas' | 'codepaper') => {
-    setMode(newMode);
-    if (newMode === 'codepaper' && paperSizeId === 'auto') {
-      setPaperSizeId('a4-portrait');
-      setCanvasPadding(32);
-    } else if (newMode === 'canvas' && paperSizeId !== 'auto') {
-      setPaperSizeId('auto');
-      setCanvasPadding(64);
+  // Code update with content-aware language detection
+  const handleCodeChange = useCallback((newCode: string) => {
+    setCode(newCode);
+    if (isAutoDetected) {
+      const detected = detectLanguage(fileName, newCode);
+      if (detected && detected !== language) {
+        setLanguage(detected);
+      }
     }
-  };
+  }, [fileName, isAutoDetected, language]);
 
-  // Modify active file
-  const handleCodeChange = (newCode: string) => {
-    setFiles((prev) =>
-      prev.map((f) => (f.id === activeFile.id ? { ...f, code: newCode } : f))
-    );
-  };
+  // Language update handler
+  const handleLanguageChange = useCallback((newLang: string, auto: boolean = false) => {
+    setLanguage(newLang);
+    setIsAutoDetected(auto);
+  }, []);
 
-  const handleLanguageChange = (newLang: string) => {
-    setFiles((prev) =>
-      prev.map((f) => (f.id === activeFile.id ? { ...f, language: newLang } : f))
-    );
-  };
-
-  const handleFileNameChange = (newName: string) => {
-    setFiles((prev) =>
-      prev.map((f) => (f.id === activeFile.id ? { ...f, name: newName } : f))
-    );
-  };
-
-  const handleAutoDetect = () => {
-    const detected = detectLanguage(activeFile.name, activeFile.code);
-    handleLanguageChange(detected);
-  };
-
-  // Multi-file management
-  const handleAddFile = () => {
-    const newId = `file-${Date.now()}`;
-    const newFile: SourceFileItem = {
-      id: newId,
-      name: `module-${files.length + 1}.ts`,
-      language: 'typescript',
-      code: `// File ${files.length + 1}\nexport function execute() {\n  return "ok";\n}`,
-    };
-    setFiles((prev) => [...prev, newFile]);
-    setActiveFileId(newId);
-  };
-
-  const handleDeleteFile = (idToDelete: string) => {
-    if (files.length <= 1) return;
-    const remaining = files.filter((f) => f.id !== idToDelete);
-    setFiles(remaining);
-    if (activeFileId === idToDelete) {
-      setActiveFileId(remaining[0].id);
+  // Filename update handler
+  const handleFileNameChange = useCallback((newName: string) => {
+    setFileName(newName);
+    if (isAutoDetected) {
+      const detected = detectLanguage(newName, code);
+      if (detected) {
+        setLanguage(detected);
+      }
     }
-  };
+  }, [code, isAutoDetected]);
+
+  // Toggle line highlighting
+  const handleToggleLineHighlight = useCallback((lineNum: number) => {
+    setHighlightedLines((prev) =>
+      prev.includes(lineNum) ? prev.filter((n) => n !== lineNum) : [...prev, lineNum]
+    );
+  }, []);
+
+  // Compute pagination
+  const documentData = useMemo(() => {
+    return paginateCode({
+      code,
+      language,
+      paperSize,
+      orientation,
+      margins,
+      fontSize,
+      lineHeight,
+      preserveBlocks,
+      lineWrapping,
+      highlightedLines,
+      fileName,
+      metadata: {
+        title: fileName,
+        author: watermarkText,
+      },
+    });
+  }, [
+    code,
+    language,
+    paperSize,
+    orientation,
+    margins,
+    fontSize,
+    lineHeight,
+    preserveBlocks,
+    lineWrapping,
+    highlightedLines,
+    fileName,
+    watermarkText,
+  ]);
 
   // State Persistence & URL Sharing
   const handleShareUrl = () => {
@@ -197,9 +199,9 @@ export default function DevPaperHome() {
         backgroundId,
         canvasPadding,
         borderRadius,
-        code: activeFile.code,
-        language: activeFile.language,
-        fileName: activeFile.name,
+        code,
+        language,
+        fileName,
       };
       const json = JSON.stringify(statePayload);
       const encoded = btoa(encodeURIComponent(json));
@@ -228,68 +230,31 @@ export default function DevPaperHome() {
         if (parsed.frameId) setFrameId(parsed.frameId);
         if (parsed.paperSizeId) setPaperSizeId(parsed.paperSizeId);
         if (parsed.backgroundId) setBackgroundId(parsed.backgroundId);
-        if (parsed.code) {
-          setFiles([
-            {
-              id: 'file-shared',
-              name: parsed.fileName || 'shared.ts',
-              language: parsed.language || 'typescript',
-              code: parsed.code,
-            },
-          ]);
-          setActiveFileId('file-shared');
-        }
+        if (parsed.code) setCode(parsed.code);
+        if (parsed.language) setLanguage(parsed.language);
+        if (parsed.fileName) setFileName(parsed.fileName);
       }
     } catch (e) {
       console.warn('Could not parse share hash:', e);
     }
   }, []);
 
-  // Compute pagination
-  const documentData = useMemo(() => {
-    return paginateCode({
-      code: activeFile.code,
-      language: activeFile.language,
-      paperSize,
-      orientation,
-      margins,
-      fontSize,
-      lineHeight,
-      preserveBlocks,
-      lineWrapping,
-      fileName: activeFile.name,
-      metadata: {
-        title: activeFile.name,
-        author: watermarkText,
-      },
-    });
-  }, [
-    activeFile.code,
-    activeFile.language,
-    activeFile.name,
-    paperSize,
-    orientation,
-    margins,
-    fontSize,
-    lineHeight,
-    preserveBlocks,
-    lineWrapping,
-    watermarkText,
-  ]);
-
-  // Export handlers
+  // Quick Copy Action
   const handleCopyClipboard = async () => {
     const canvasEl = canvasRef.current?.getCanvasElement();
     if (!canvasEl) throw new Error('Canvas element not available.');
     await copyImageToClipboard(canvasEl, 2);
+    setQuickCopied(true);
+    setTimeout(() => setQuickCopied(false), 2000);
   };
 
+  // Export handlers
   const handleExportPng = async (scale: number) => {
     const canvasEl = canvasRef.current?.getCanvasElement();
     if (!canvasEl) throw new Error('Canvas element not available.');
     await exportElementAsImage(canvasEl, {
       pixelRatio: scale,
-      fileName: activeFile.name.replace(/\.[^/.]+$/, ''),
+      fileName: fileName.replace(/\.[^/.]+$/, ''),
       format: 'png',
     });
   };
@@ -298,7 +263,7 @@ export default function DevPaperHome() {
     const canvasEl = canvasRef.current?.getCanvasElement();
     if (!canvasEl) throw new Error('Canvas element not available.');
     await exportElementAsSvg(canvasEl, {
-      fileName: activeFile.name.replace(/\.[^/.]+$/, ''),
+      fileName: fileName.replace(/\.[^/.]+$/, ''),
     });
   };
 
@@ -308,9 +273,9 @@ export default function DevPaperHome() {
     await exportElementsAsPdf(pageEls, {
       paperSize,
       orientation,
-      fileName: activeFile.name.replace(/\.[^/.]+$/, ''),
+      fileName: fileName.replace(/\.[^/.]+$/, ''),
       metadata: {
-        title: activeFile.name,
+        title: fileName,
         author: watermarkText,
       },
     });
@@ -320,68 +285,39 @@ export default function DevPaperHome() {
     const pageEls = canvasRef.current?.getPageElements();
     if (!pageEls || pageEls.length === 0) throw new Error('No pages available for ZIP export.');
     await exportElementsAsZip(pageEls, {
-      fileName: activeFile.name.replace(/\.[^/.]+$/, ''),
+      fileName: fileName.replace(/\.[^/.]+$/, ''),
       format,
       pixelRatio: 2.5,
     });
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-white">
-      {/* Top App Shell Navbar */}
+    <div className="min-h-screen flex flex-col bg-[#090a0f] text-zinc-100 antialiased selection:bg-emerald-500/30">
+      {/* Top Navigation Bar */}
       <Navbar
-        mode={mode}
-        onChangeMode={handleModeChange}
-        files={files}
-        activeFileId={activeFileId}
-        onSelectFile={setActiveFileId}
-        onAddFile={handleAddFile}
-        onDeleteFile={handleDeleteFile}
         onShareUrl={handleShareUrl}
-        onLoadPreset={() => {}}
-        onSavePreset={() => {}}
         shareCopied={shareCopied}
+        onOpenExportModal={() => setIsExportModalOpen(true)}
+        onQuickCopy={handleCopyClipboard}
+        quickCopied={quickCopied}
       />
 
       {/* Main Studio Workspace */}
       <main className="flex-1 pt-20 pb-28 px-4 sm:px-8 max-w-7xl mx-auto w-full flex flex-col items-center gap-6">
-        {/* Quick Toggleable Code Input Drawer */}
-        <div className="w-full max-w-4xl">
-          <div className="flex items-center justify-between mb-2">
-            <button
-              onClick={() => setShowEditorDrawer((prev) => !prev)}
-              className="flex items-center gap-2 text-xs font-medium text-white/70 hover:text-white px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 transition"
-            >
-              <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{showEditorDrawer ? 'Hide Source Code Drawer' : 'Edit Source Code & Upload'}</span>
-              {showEditorDrawer ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </button>
-
-            <div className="text-xs text-white/40 font-mono">
-              {documentData.totalPages} {documentData.totalPages === 1 ? 'Page' : 'Pages'} • {documentData.totalLines} Lines
-            </div>
-          </div>
-
-          {showEditorDrawer && (
-            <div className="mb-6 animate-in fade-in duration-200">
-              <CodeEditorArea
-                code={activeFile.code}
-                language={activeFile.language}
-                fileName={activeFile.name}
-                onChangeCode={handleCodeChange}
-                onChangeLanguage={handleLanguageChange}
-                onChangeFileName={handleFileNameChange}
-                onAutoDetect={handleAutoDetect}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Live Code Composition & Document Canvas */}
-        <div className="w-full flex justify-center">
+        {/* Live Code Composition Canvas (Direct In-Window Editing) */}
+        <div className="w-full flex justify-center animate-in fade-in duration-300">
           <SnippetCanvas
             ref={canvasRef}
             documentData={documentData}
+            code={code}
+            onCodeChange={handleCodeChange}
+            language={language}
+            isAutoDetected={isAutoDetected}
+            onLanguageChange={handleLanguageChange}
+            fileName={fileName}
+            onFileNameChange={handleFileNameChange}
+            highlightedLines={highlightedLines}
+            onToggleLineHighlight={handleToggleLineHighlight}
             paperSize={paperSize}
             orientation={orientation}
             theme={theme}
@@ -391,33 +327,28 @@ export default function DevPaperHome() {
             fontSize={fontSize}
             lineHeight={lineHeight}
             showLineNumbers={showLineNumbers}
+            lineWrapping={lineWrapping}
             canvasPadding={canvasPadding}
             borderRadius={borderRadius}
             dropShadow={dropShadow}
             windowOpacity={windowOpacity}
             margins={margins}
-            docTitle={activeFile.name}
+            docTitle={fileName}
             docAuthor={watermarkText}
-            docRepo="github.com/meta/astryx"
+            docRepo="github.com/DevPaper/devpaper"
             showWatermark={showWatermark}
             watermarkText={watermarkText}
-            fileName={activeFile.name}
-            language={activeFile.language}
-            onFileNameChange={handleFileNameChange}
           />
         </div>
       </main>
 
-      {/* Floating Control Dock (Ray.so + Carbon + Astryx) */}
+      {/* Floating Control Dock (Themes, Fonts, Frame, Canvas, Options, Export) */}
       <FloatingDock
         currentThemeId={themeId}
         currentFontId={fontId}
         fontSize={fontSize}
         lineHeight={lineHeight}
         currentFrameId={frameId}
-        currentPaperId={paperSizeId}
-        orientation={orientation}
-        preserveBlocks={preserveBlocks}
         currentBgId={backgroundId}
         canvasPadding={canvasPadding}
         borderRadius={borderRadius}
@@ -426,16 +357,11 @@ export default function DevPaperHome() {
         lineWrapping={lineWrapping}
         showWatermark={showWatermark}
         watermarkText={watermarkText}
-        pageCount={documentData.totalPages}
-        isPaginated={documentData.totalPages > 1 || paperSizeId !== 'auto'}
         onSelectTheme={setThemeId}
         onSelectFont={setFontId}
         onChangeFontSize={setFontSize}
         onChangeLineHeight={setLineHeight}
         onSelectFrame={setFrameId}
-        onSelectPaper={setPaperSizeId}
-        onSelectOrientation={setOrientation}
-        onTogglePreserveBlocks={setPreserveBlocks}
         onSelectBackground={setBackgroundId}
         onChangePadding={setCanvasPadding}
         onChangeBorderRadius={setBorderRadius}
@@ -445,6 +371,24 @@ export default function DevPaperHome() {
         onToggleWatermark={() => setShowWatermark((p) => !p)}
         onChangeWatermarkText={setWatermarkText}
         onCopyClipboard={handleCopyClipboard}
+        onOpenExportModal={() => setIsExportModalOpen(true)}
+      />
+
+      {/* Export & Sizing Studio Dialog */}
+      <ExportStudioModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        fileName={fileName}
+        code={code}
+        pageCount={documentData.totalPages}
+        totalLines={documentData.totalLines}
+        currentPaperId={paperSizeId}
+        orientation={orientation}
+        preserveBlocks={preserveBlocks}
+        onSelectPaper={setPaperSizeId}
+        onSelectOrientation={setOrientation}
+        onTogglePreserveBlocks={setPreserveBlocks}
+        onCopyClipboard={handleCopyClipboard}
         onExportPng={handleExportPng}
         onExportSvg={handleExportSvg}
         onExportPdf={handleExportPdf}
@@ -453,4 +397,3 @@ export default function DevPaperHome() {
     </div>
   );
 }
-
