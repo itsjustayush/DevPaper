@@ -74,3 +74,7 @@ Returns a downloadable ZIP containing `source/` code and `snippets/*.svg` vector
 - Generating printable technical cheat-sheets or multi-page PDF guides.
 - Creating downloadable code bundles for users.
 
+
+---
+Author: Ayush (@itsjustayush)
+License: MIT (c) 2026 Ayush (@itsjustayush) and DevPaper Contributors

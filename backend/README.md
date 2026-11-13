@@ -187,7 +187,8 @@ my-service-code.zip
 
 ---
 
-## License
+## Authors & License
 
-MIT © DevPaper Contributors.
+DevPaper is authored and maintained by **Ayush** ([@itsjustayush](https://github.com/itsjustayush)) and the DevPaper Contributors.  
+Licensed under the **[MIT License](../LICENSE)**. Copyright (c) 2026 Ayush (@itsjustayush) and DevPaper Contributors.
 

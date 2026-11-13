@@ -2,6 +2,8 @@
   "name": "DevPaper Typesetting Engine",
   "version": "1.0.0",
   "description": "Headless code presentation studio for generating vector SVGs, multi-page PDFs, and ZIP archives from source code.",
+  "author": "Ayush (@itsjustayush)",
+  "license": "MIT",
   "auth": "none",
   "base_url": "http://localhost:8000",
   "documentation_url": "http://localhost:3000/agent",

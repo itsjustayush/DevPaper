@@ -1,6 +1,13 @@
 {
   "name": "devpaper",
   "version": "1.0.0",
+  "description": "The aesthetic code presentation studio & multi-page typesetting engine",
+  "author": "Ayush (@itsjustayush) <info.cometlabs@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevPaper/devpaper.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",

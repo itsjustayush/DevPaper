@@ -42,9 +42,8 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
               <button
                 key={bg.id}
                 onClick={() => onSelectBackground(bg.id)}
-                className={`group relative h-14 rounded-xl border flex items-end p-1.5 text-left overflow-hidden transition ${
-                  isSelected ? 'border-emerald-400 ring-2 ring-emerald-400/30' : 'border-zinc-800 hover:border-zinc-600'
-                }`}
+                className={`group relative h-14 rounded-xl border flex items-end p-1.5 text-left overflow-hidden transition ${isSelected ? 'border-emerald-400 ring-2 ring-emerald-400/30' : 'border-zinc-800 hover:border-zinc-600'
+                  }`}
                 style={{ background: bg.value }}
                 title={bg.name}
               >
@@ -71,11 +70,10 @@ export const BackgroundSelector: React.FC<BackgroundSelectorProps> = ({
             <button
               key={pad}
               onClick={() => onChangePadding(pad)}
-              className={`p-2 rounded-xl text-xs font-mono border transition ${
-                canvasPadding === pad
-                  ? 'border-emerald-500/50 bg-emerald-500/10 text-zinc-100 font-medium'
-                  : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-white hover:bg-zinc-850'
-              }`}
+              className={`p-2 rounded-xl text-xs font-mono border transition ${canvasPadding === pad
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-zinc-100 font-medium'
+                : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-white hover:bg-zinc-850'
+                }`}
             >
               {pad}px
             </button>

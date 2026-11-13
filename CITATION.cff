@@ -1,6 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this software in your research, papers, or documentation, please cite it as below."
 authors:
+  - name: "Ayush"
+    alias: "itsjustayush"
+    website: "https://github.com/itsjustayush"
   - name: "DevPaper Contributors"
     website: "https://github.com/DevPaper/devpaper"
 title: "DevPaper: Code Presentation and Multi-Page Typesetting Studio"

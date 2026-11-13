@@ -63,3 +63,4 @@ We consider security research conducted under this policy to be authorized. We w
 - Do not exploit a security issue beyond the minimum necessary to demonstrate the proof of concept.
 
 Thank you for helping keep DevPaper secure!
+

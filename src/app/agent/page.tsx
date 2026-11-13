@@ -487,7 +487,7 @@ print("Snippet saved successfully!")`;
 
       {/* Footer */}
       <footer className="border-t border-zinc-800 py-6 px-6 text-center text-xs text-zinc-500 font-mono">
-        DevPaper Open-Source Code Studio & Headless API • <a href="https://github.com/DevPaper/devpaper" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-300 underline">github.com/DevPaper/devpaper</a>
+        DevPaper Open-Source Code Studio & Headless API • Authored by Ayush (<a href="https://github.com/itsjustayush" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-300 underline">@itsjustayush</a>) • MIT License
       </footer>
     </div>
   );

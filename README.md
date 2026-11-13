@@ -5,6 +5,7 @@
 
 [![CI Status](https://github.com/DevPaper/devpaper/actions/workflows/ci.yml/badge.svg)](https://github.com/DevPaper/devpaper/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![Author: Ayush](https://img.shields.io/badge/Author-Ayush%20(@itsjustayush)-blue.svg)](https://github.com/itsjustayush)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178c6?logo=typescript)](https://www.typescriptlang.org)
@@ -21,43 +22,299 @@ Traditional code screenshot tools (such as Ray.so and Carbon) create beautiful s
 1. **🎨 Interactive Code Studio (Single-Frame & Multi-Page)**:
    - Type or paste code directly in a distraction-free, content-aware editor with auto language detection.
    - Flow arbitrarily long source files across sequential physical sheets (**A4, Letter, A3, 16:9 Slides**) with continuous line numbering, running headers, footers, and block-boundary protection.
-   - Export high-resolution PNGs, lossless vector SVGs, merged multi-page PDFs, and numbered ZIP packages.
+   - Export high-resolution PNGs, lossless vector SVGs, merged multi-page PDFs, and numbered ZIP packages with sub-second rendering.
 2. **⚡ Headless Python API & AI Agent Engine (`/agent` & `/ai`)**:
    - Built-in zero-auth FastAPI microservice allowing developers and AI agents (Cursor, Claude Code, Windsurf, Copilot, Antigravity) to typeset code into vector SVGs, multi-page PDFs, or bundled ZIP archives.
    - Direct image query URL for Markdown READMEs and website HTML (`<img src="...">`).
 
 ---
 
-## 🌐 Public API & Interfaces
+## 🌐 Public API & Subsystems Overview
 
 DevPaper exposes four clearly-defined public interfaces:
 
-### 1. Headless REST API (FastAPI)
-The headless Python backend serves zero-auth endpoints at `http://localhost:8000`:
-* `POST /api/v1/snippet`: Typesets a code block into a downloadable **SVG**, **PDF**, or **HTML** file.
-* `GET /api/v1/snippet`: Direct image query endpoint for GitHub `README.md` and website embedding.
-* `POST /api/v1/files`: Batch renders whole repositories/files into a downloadable **ZIP archive** (with `source/`, `snippets/`, and `MANIFEST.md`) or merged PDF.
-* `GET /api/v1/themes`, `/backgrounds`, `/fonts`, `/frames`: Machine-readable registry endpoints.
-
-### 2. AI Agent Specification
-* [`/ai.txt`](public/ai.txt): Ultra-compact, token-efficient system prompt directive for LLMs.
-* [`/agent.json`](public/agent.json): OpenAPI-compliant JSON schema for automated tool calling.
-* `/agent`: Interactive developer playground and system prompt library.
-
-### 3. Core TypeScript Engine (Library Mode)
-* `src/core/paginator.ts`: Pure mathematical code-flow calculator (`calculatePagination(...)`).
-* `src/core/syntax.ts`: Universal syntax highlighter with automatic language detection.
-* `src/core/exporters/`: Vector SVG, Blob-streamed PNG, jsPDF document, and JSZip packagers.
-
-### 4. Declarative Plugin Registries
-* `src/registries/themes.ts`: Syntax color palettes.
-* `src/registries/fonts.ts`: Monospace developer typography.
-* `src/registries/frames.ts`: Window chrome styles (macOS, Windows, Terminal, Minimal).
-* `src/registries/paperSizes.ts`: Physical and digital page dimensions.
+1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `http://localhost:8000` for generating vector SVG, PDF, or ZIP packages.
+2. **AI Agent Specifications**:
+   - [`/ai.txt`](public/ai.txt): Ultra-compact, token-efficient system prompt directive for LLMs.
+   - [`/agent.json`](public/agent.json): OpenAPI-compliant JSON schema for automated tool calling.
+   - `/agent`: Interactive developer playground, live SVG sandbox, and system prompt library.
+3. **Core TypeScript Engine (Library Mode)**:
+   - `src/core/paginator.ts`: Pure mathematical code-flow calculator (`calculatePagination(...)`).
+   - `src/core/syntax.ts`: Universal syntax highlighter with automatic language detection.
+   - `src/core/exporters/`: Vector SVG, Blob-streamed PNG, jsPDF document, and JSZip packagers.
+4. **Declarative Plugin Registries**:
+   - `src/registries/themes.ts`: Syntax color palettes.
+   - `src/registries/fonts.ts`: Monospace developer typography.
+   - `src/registries/frames.ts`: Window chrome styles (macOS, Windows, Terminal, Minimal).
+   - `src/registries/paperSizes.ts`: Physical and digital page dimensions.
 
 ---
 
-## ✨ Features
+## 🔌 Complete Headless API Reference
+
+The DevPaper Headless API runs on Python (FastAPI + Pygments + ReportLab) with **zero authentication required** and **CORS enabled (`*`)**, making it effortlessly callable by local CLI scripts, web apps, and AI coding agents.
+
+* **Base URL**: `http://localhost:8000` (or your deployed host)
+* **Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI) / [http://localhost:8000/redoc](http://localhost:8000/redoc) (ReDoc)
+* **Auth**: None required (open public endpoints)
+
+### Endpoint Summary
+
+| Method | Endpoint | Output | Purpose |
+|---|---|---|---|
+| `POST` | `/api/v1/snippet` | SVG / PDF / HTML | Typesets a single code block into an image or document. |
+| `GET` | `/api/v1/snippet` | SVG Image | Direct URL for GitHub `README.md` and website embedding. |
+| `POST` | `/api/v1/files` | ZIP / Merged PDF | Batch renders entire folders or multiple files into a bundle. |
+| `GET` | `/api/v1/themes` | JSON Array | Lists all available syntax color themes. |
+| `GET` | `/api/v1/backgrounds` | JSON Array | Lists all canvas wallpapers and gradient presets. |
+| `GET` | `/api/v1/fonts` | JSON Array | Lists all bundled monospace developer fonts. |
+| `GET` | `/api/v1/frames` | JSON Array | Lists window chrome framing options. |
+| `GET` | `/api/v1/health` | JSON Object | Service health check. |
+
+---
+
+### 1. Generate Single Snippet (`POST /api/v1/snippet`)
+
+Converts a code snippet into a high-polish, vector-crisp standalone file.
+
+#### Request Headers
+```http
+Content-Type: application/json
+```
+
+#### Request Parameters (JSON)
+
+| Field | Type | Default | Required | Description |
+|---|---|---|:---:|---|
+| `code` | `string` | — | **Yes** | Source code to be typeset. |
+| `language` | `string` | `"auto"` | No | Target language (e.g. `python`, `typescript`, `rust`, `go`, `sql`). Auto-detected if `"auto"`. |
+| `file_name` | `string` | `"snippet.txt"` | No | File name displayed in the window header chrome. |
+| `theme` | `string` | `"tokyo-night"` | No | Theme ID: `tokyo-night`, `one-dark-pro`, `dracula`, `catppuccin`, `nord`, `monokai`, `github-dark`, `github-light`, `synthwave-84`. |
+| `background` | `string` | `"cosmic-sunset"` | No | Canvas wallpaper: `cosmic-sunset`, `aurora`, `neon-dusk`, `ember-glow`, `ocean-abyss`, `obsidian`, `transparent`. |
+| `font` | `string` | `"jetbrains-mono"` | No | Developer font: `jetbrains-mono`, `fira-code`, `geist-mono`, `ibm-plex-mono`, `cascadia-code`, `source-code-pro`. |
+| `frame` | `string` | `"macos"` | No | Window frame: `macos`, `macos-outline`, `macos-monochrome`, `windows`, `terminal`, `minimal`, `none`. |
+| `show_line_numbers`| `boolean` | `true` | No | Whether to render gutter line numbers. |
+| `start_line` | `integer` | `1` | No | Starting index for line numbering. |
+| `padding` | `integer` | `48` | No | Outer canvas padding in pixels (`16`, `32`, `48`, `64`, `128`). |
+| `border_radius` | `integer` | `16` | No | Window corner radius in pixels. |
+| `watermark` | `string` | `"DevPaper"` | No | Watermark label in bottom right corner (pass `""` to omit). |
+| `highlight_lines` | `integer[]` | `[]` | No | Array of 1-based line numbers to emphasize. |
+| `format` | `string` | `"svg"` | No | Export format: `"svg"` (vector SVG), `"pdf"` (vector PDF), or `"html"`. |
+
+#### Response
+Binary stream with `Content-Disposition: attachment; filename="<file_name>.<format>"`:
+* `image/svg+xml` (for `format: "svg"`)
+* `application/pdf` (for `format: "pdf"`)
+* `text/html; charset=utf-8` (for `format: "html"`)
+
+#### Example cURL
+```bash
+curl -X POST http://localhost:8000/api/v1/snippet \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "def quicksort(arr):\n    if len(arr) <= 1: return arr\n    pivot = arr[len(arr) // 2]\n    return quicksort([x for x in arr if x < pivot]) + [x for x in arr if x == pivot] + quicksort([x for x in arr if x > pivot])",
+    "language": "python",
+    "file_name": "quicksort.py",
+    "theme": "tokyo-night",
+    "background": "aurora",
+    "frame": "macos",
+    "format": "svg"
+  }' \
+  --output quicksort.svg
+```
+
+#### Example Python (`requests`)
+```python
+import requests
+
+payload = {
+    "code": "const greet = (name: string): string => `Hello, ${name}!`;",
+    "language": "typescript",
+    "file_name": "greet.ts",
+    "theme": "one-dark-pro",
+    "background": "cosmic-sunset",
+    "format": "svg"
+}
+
+response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
+with open("greet.svg", "wb") as f:
+    f.write(response.content)
+```
+
+#### Example JavaScript / TypeScript (`fetch`)
+```typescript
+const response = await fetch("http://localhost:8000/api/v1/snippet", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    code: 'fn main() { println!("Hello from Rust!"); }',
+    language: "rust",
+    file_name: "main.rs",
+    theme: "dracula",
+    format: "svg",
+  }),
+});
+
+const blob = await response.blob();
+```
+
+---
+
+### 2. Direct Markdown / README Image Embedding (`GET /api/v1/snippet`)
+
+Allows embedding live syntax-highlighted code images directly into markdown files or web pages without saving files to disk.
+
+#### URL Syntax:
+```markdown
+![Hero Snippet](http://localhost:8000/api/v1/snippet?code=SELECT%20*%20FROM%20users%20WHERE%20active%20=%20true;&lang=sql&name=query.sql&theme=tokyo-night&bg=cosmic-sunset)
+```
+
+#### HTML Syntax:
+```html
+<img src="http://localhost:8000/api/v1/snippet?code=const+pi+=+3.14159;&lang=typescript&name=math.ts" alt="Code Snippet" />
+```
+
+#### Query Parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `code` | `string` | `"print('Hello from DevPaper API')"` | URL-encoded source code string. |
+| `lang` | `string` | `"auto"` | Language identifier (auto-detects if omitted). |
+| `name` | `string` | `"snippet.txt"` | Display name shown in window header. |
+| `theme` | `string` | `"tokyo-night"` | Syntax theme palette ID. |
+| `bg` | `string` | `"cosmic-sunset"` | Canvas wallpaper background ID. |
+| `font` | `string` | `"jetbrains-mono"` | Font family ID. |
+| `frame` | `string` | `"macos"` | Window chrome frame (`macos`, `windows`, `terminal`, `minimal`). |
+| `lines` | `boolean` | `true` | Show gutter line numbering (`true` / `false`). |
+| `format` | `string` | `"svg"` | Output image format (`svg`). |
+
+---
+
+### 3. Batch Multi-File Packaging (`POST /api/v1/files`)
+
+Takes multiple source files and packages them into a bundled **ZIP archive** or a **merged multi-page PDF**.
+
+#### Request Headers
+```http
+Content-Type: application/json
+```
+
+#### Request Parameters (JSON)
+```json
+{
+  "files": [
+    {
+      "name": "server.py",
+      "code": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/')\ndef root():\n    return {'status': 'healthy'}",
+      "language": "python"
+    },
+    {
+      "name": "docker-compose.yml",
+      "code": "version: '3.8'\nservices:\n  api:\n    build: .\n    ports:\n      - '8000:8000'",
+      "language": "yaml"
+    }
+  ],
+  "format": "zip",
+  "theme": "tokyo-night",
+  "background": "cosmic-sunset",
+  "archive_name": "microservice-bundle"
+}
+```
+
+#### Output ZIP Structure
+When `format: "zip"`, returns a clean archive organized for documentation and distribution:
+```text
+microservice-bundle.zip
+├── MANIFEST.md              # Auto-generated index with metadata and file list
+├── source/                  # Original raw code files
+│   ├── server.py
+│   └── docker-compose.yml
+└── snippets/                # Vector SVG typeset images
+    ├── server.svg
+    └── docker-compose.svg
+```
+
+#### Example cURL
+```bash
+curl -X POST http://localhost:8000/api/v1/files \
+  -H "Content-Type: application/json" \
+  -d '{
+    "files": [
+      {"name": "index.ts", "code": "export const VERSION = \"1.0.0\";", "language": "typescript"},
+      {"name": "types.ts", "code": "export type ID = string | number;", "language": "typescript"}
+    ],
+    "format": "zip",
+    "archive_name": "ts-types-bundle"
+  }' \
+  --output bundle.zip
+```
+
+---
+
+### 4. Registry Introspection Endpoints
+
+These endpoints allow IDE extensions, CLI tools, and AI agents to introspect available options dynamically.
+
+#### `GET /api/v1/themes`
+Returns an array of available theme palettes:
+```json
+[
+  { "id": "tokyo-night", "name": "Tokyo Night", "type": "dark" },
+  { "id": "one-dark-pro", "name": "One Dark Pro", "type": "dark" },
+  { "id": "dracula", "name": "Dracula", "type": "dark" },
+  { "id": "catppuccin", "name": "Catppuccin Mocha", "type": "dark" },
+  { "id": "nord", "name": "Nord", "type": "dark" },
+  { "id": "monokai", "name": "Monokai Pro", "type": "dark" },
+  { "id": "github-dark", "name": "GitHub Dark", "type": "dark" },
+  { "id": "github-light", "name": "GitHub Light", "type": "light" },
+  { "id": "synthwave-84", "name": "Synthwave '84", "type": "dark" }
+]
+```
+
+#### `GET /api/v1/backgrounds`
+Returns available wallpaper backgrounds:
+```json
+[
+  { "id": "cosmic-sunset", "name": "Cosmic Sunset" },
+  { "id": "aurora", "name": "Aurora" },
+  { "id": "neon-dusk", "name": "Neon Dusk" },
+  { "id": "ember-glow", "name": "Ember Glow" },
+  { "id": "ocean-abyss", "name": "Ocean Abyss" },
+  { "id": "obsidian", "name": "Obsidian Solid" },
+  { "id": "transparent", "name": "Transparent" }
+]
+```
+
+#### `GET /api/v1/fonts`
+Returns available developer fonts:
+```json
+[
+  { "id": "jetbrains-mono", "name": "JetBrains Mono" },
+  { "id": "fira-code", "name": "Fira Code" },
+  { "id": "geist-mono", "name": "Geist Mono" },
+  { "id": "ibm-plex-mono", "name": "IBM Plex Mono" },
+  { "id": "cascadia-code", "name": "Cascadia Code" },
+  { "id": "source-code-pro", "name": "Source Code Pro" }
+]
+```
+
+#### `GET /api/v1/frames`
+Returns available window chrome frame styles:
+```json
+[
+  { "id": "macos", "name": "macOS Traffic Lights (Filled)" },
+  { "id": "macos-outline", "name": "macOS Outline" },
+  { "id": "macos-monochrome", "name": "macOS Monochrome" },
+  { "id": "windows", "name": "Windows 11 Controls" },
+  { "id": "terminal", "name": "Terminal Shell ($ bash)" },
+  { "id": "minimal", "name": "Minimalist Header" },
+  { "id": "none", "name": "Borderless / None" }
+]
+```
+
+---
+
+## ✨ Studio Features
 
 ### Visual Code Composition
 * **Syntax Highlighting**: TextMate accurate highlighting for 100+ languages with automatic detection.
@@ -117,19 +374,9 @@ The API starts at [http://localhost:8000](http://localhost:8000) (Interactive Sw
 
 ---
 
-## 🤖 Direct README Image Embedding
-
-AI agents and developers can insert live code images directly into markdown without saving files locally:
-
-```markdown
-![Architecture](http://localhost:8000/api/v1/snippet?code=const+app+=+new+Hono();&lang=typescript&name=server.ts)
-```
-
----
-
 ## 🧪 Testing
 
-DevPaper features comprehensive automated test suites across both TypeScript and Python:
+DevPaper features automated test suites across both TypeScript and Python:
 
 ```bash
 # Run Vitest unit tests (Frontend & Core Engines)
@@ -175,11 +422,47 @@ For security vulnerability reporting, please see [SECURITY.md](SECURITY.md). Ple
 
 ## 📜 Citation
 
-If you use DevPaper in academic research, technical papers, or documentation, please cite it using the metadata in [CITATION.cff](CITATION.cff).
+If you use DevPaper in academic research, technical papers, or documentation, please cite it using the metadata in [CITATION.cff](CITATION.cff):
+
+```bibtex
+@software{devpaper2026,
+  author = {Ayush and DevPaper Contributors},
+  title = {DevPaper: Code Presentation and Multi-Page Typesetting Studio},
+  year = {2026},
+  url = {https://github.com/DevPaper/devpaper},
+  version = {1.0.0}
+}
+```
 
 ---
 
-## 📄 License
+## ⚖️ Authors & Legal Notices
 
-DevPaper is open-source software licensed under the **[MIT License](LICENSE)** (OSI-approved).  
-Copyright (c) 2026 DevPaper Contributors.
+DevPaper is authored, designed, and maintained by **Ayush** ([@itsjustayush](https://github.com/itsjustayush)) along with the DevPaper Contributors.
+
+### License
+DevPaper is open-source software licensed under the **[MIT License](LICENSE)** (an OSI-approved permissive license):
+
+```text
+MIT License
+
+Copyright (c) 2026 Ayush (@itsjustayush) and DevPaper Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
