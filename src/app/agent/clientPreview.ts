@@ -334,3 +334,4 @@ export function render_svg_client_preview(options: SvgPreviewOptions): string {
   parts.push('</svg>');
   return parts.join('\n');
 }
+

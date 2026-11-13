@@ -122,3 +122,4 @@ def generate_pdf_document(
     c.save()
     buffer.seek(0)
     return buffer.getvalue()
+

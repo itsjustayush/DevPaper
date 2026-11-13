@@ -52,3 +52,4 @@ class MultiFileRequest(BaseModel):
     paper_size: Optional[str] = Field("a4", description="Paper size: a4, letter, auto")
     watermark: Optional[str] = Field("DevPaper Studio", description="Watermark text")
     archive_name: Optional[str] = Field("devpaper-bundle", description="Name of the exported zip/pdf file")
+

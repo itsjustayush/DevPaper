@@ -142,3 +142,4 @@ FONTS = {
     "source-code-pro": '"Source Code Pro", Menlo, Consolas, monospace',
     "system-mono": 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
 }
+

@@ -1,0 +1,43 @@
+name: Add my project to Used by
+description: Tell the maintainers how your public project uses this work
+title: "[Used by] "
+labels: ["used-by", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks. We list only public, verifiable usage. This listing is not an endorsement.
+  - type: input
+    id: project
+    attributes:
+      label: Project or organization name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Public project URL
+      placeholder: https://github.com/...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version used
+      placeholder: 1.4.0 or main
+    validations:
+      required: true
+  - type: textarea
+    id: usage
+    attributes:
+      label: How do you use it?
+      description: One or two factual sentences; do not include secrets.
+    validations:
+      required: true
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Listing permission
+      options:
+        - label: I have permission to request this public listing, and I understand it does not imply endorsement.
+          required: true

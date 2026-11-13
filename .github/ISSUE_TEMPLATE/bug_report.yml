@@ -1,0 +1,65 @@
+name: Bug report
+description: Create a report to help us fix an issue or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please provide as much factual detail as possible so maintainers can reproduce and fix it quickly.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: When I click export with 15 pages of code...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: What steps do we take to observe the issue?
+      placeholder: |
+        1. Open DevPaper studio at http://localhost:3000
+        2. Paste sample code with 200 lines
+        3. Switch format to A4 Portrait
+        4. Click Export -> PDF
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: subsystem
+    attributes:
+      label: Affected Subsystem
+      options:
+        - Web Canvas / Live Editor
+        - Pagination Engine (CodePaper)
+        - Export Pipeline (PDF / PNG / SVG / ZIP)
+        - Headless Python FastAPI Backend
+        - AI Spec / Agent Hub (/agent, /ai)
+        - Theme / Font Registries
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS version, Browser, Node.js version, Python version.
+      placeholder: Windows 11 / Chrome 128 / Node 22 / Python 3.12
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console or Terminal Logs
+      description: Copy and paste any error logs or terminal output.
+      render: shell
+    validations:
+      required: false

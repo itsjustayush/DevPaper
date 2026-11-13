@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software in your research, papers, or documentation, please cite it as below."
+authors:
+  - name: "DevPaper Contributors"
+    website: "https://github.com/DevPaper/devpaper"
+title: "DevPaper: Code Presentation and Multi-Page Typesetting Studio"
+version: 1.0.0
+date-released: 2026-11-13
+url: "https://github.com/DevPaper/devpaper"
+repository-code: "https://github.com/DevPaper/devpaper"
+license: MIT
+keywords:
+  - "code-presentation"
+  - "syntax-highlighting"
+  - "typesetting"
+  - "pagination"
+  - "code-documentation"
+  - "developer-tools"
+  - "shiki"
+  - "fastapi"
+  - "pdf-generation"
+  - "svg-renderer"
+abstract: "DevPaper is an open-source, web-based code presentation and typesetting studio merging modern code-image generation with a document-grade pagination engine and headless Python API."

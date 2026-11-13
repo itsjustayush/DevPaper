@@ -265,3 +265,4 @@ def render_svg_snippet(
 
     svg_parts.append('</svg>')
     return "\n".join(svg_parts)
+

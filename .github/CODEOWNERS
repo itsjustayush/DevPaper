@@ -1,0 +1,25 @@
+# DevPaper Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global project maintainers
+*                     @DevPaper/maintainers
+
+# Security-critical infrastructure & workflows
+/.github/workflows/   @DevPaper/security-maintainers
+/.github/dependabot.yml @DevPaper/security-maintainers
+/SECURITY.md          @DevPaper/security-maintainers
+
+# Frontend UI, Astryx Theme, & Core Typesetting Engine
+/src/                 @DevPaper/core-maintainers
+/tests/               @DevPaper/core-maintainers
+/package.json         @DevPaper/core-maintainers
+/tsconfig.json        @DevPaper/core-maintainers
+
+# Python FastAPI Backend & Renderers (SVG, PDF, ZIP)
+/backend/             @DevPaper/backend-maintainers
+
+# Documentation, AI specs, & community files
+/*.md                 @DevPaper/docs-maintainers
+/public/              @DevPaper/docs-maintainers
+/CITATION.cff         @DevPaper/docs-maintainers
+/ADOPTERS.md          @DevPaper/docs-maintainers
