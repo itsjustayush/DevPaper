@@ -2,6 +2,8 @@
 
 A lightning-fast, zero-auth, high-performance headless code typesetting and presentation microservice built with **FastAPI**, **Pygments**, and **ReportLab**.
 
+Companion backend to the [DevPaper Web Studio](https://devpaper-code.vercel.app).
+
 DevPaper API converts raw code blocks or multi-file repositories into pixel-perfect vector **SVG**, multi-page **PDF**, or bundled **ZIP** archives suitable for READMEs, technical documentation, architectural guides, and social cards.
 
 ---

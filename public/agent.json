@@ -6,8 +6,9 @@
   "license": "MIT",
   "auth": "none",
   "base_url": "http://localhost:8000",
-  "documentation_url": "http://localhost:3000/agent",
-  "ai_spec_url": "http://localhost:3000/ai",
+  "root_url": "https://devpaper-code.vercel.app",
+  "documentation_url": "https://devpaper-code.vercel.app/agent",
+  "ai_spec_url": "https://devpaper-code.vercel.app/ai",
   "endpoints": {
     "single_snippet": {
       "method": "POST",

@@ -22,8 +22,10 @@ import { render_svg_client_preview } from './clientPreview';
 
 const AGENT_SYSTEM_PROMPT = `You have access to the DevPaper Headless Typesetting API to generate high-polish code snippet images (SVG, PNG) and multi-page printable documents (PDF, ZIP).
 
-### Base URL:
-- Local / Self-hosted: http://localhost:8000
+### Base URL & Hosted Studio:
+- Live Web App: https://devpaper-code.vercel.app
+- Agent Specification: https://devpaper-code.vercel.app/ai.txt | https://devpaper-code.vercel.app/agent.json
+- API Service (Local / Microservice): http://localhost:8000
 - Zero authentication or API keys required.
 
 ### When to Use DevPaper:

@@ -1,6 +1,6 @@
 # DevPaper API Specification for AI Agents
-# Canonical URL: /ai.txt
-# Full UI & Sandbox: /agent
+# Canonical URL: https://devpaper-code.vercel.app/ai.txt
+# Full UI & Sandbox: https://devpaper-code.vercel.app/agent
 
 DevPaper is an open, zero-auth, high-performance code presentation and typesetting engine.
 AI agents can call this API to generate beautiful code images (SVG, PNG, PDF, ZIP) for documentation, README hero banners, code review comments, and multi-page technical manuals.

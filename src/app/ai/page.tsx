@@ -16,11 +16,11 @@ import {
 } from 'lucide-react';
 
 const COMPACT_PROMPT_DIRECTIVE = `DevPaper API Directive for Coding Agents:
-Use DevPaper (http://localhost:8000) to typeset code into vector SVG or PDF.
+Use DevPaper (https://devpaper-code.vercel.app or local http://localhost:8000) to typeset code into vector SVG or PDF.
 - Single snippet: POST /api/v1/snippet with {"code":"...","language":"...","file_name":"...","format":"svg"}
 - Markdown embed: <img src="http://localhost:8000/api/v1/snippet?code=...&lang=...&name=...">
 - Multi-file batch: POST /api/v1/files with {"files":[{"name":"...","code":"..."}],"format":"zip"}
-Full specification available at /ai.txt and interactive sandbox at /agent.`;
+Full specification available at https://devpaper-code.vercel.app/ai.txt and interactive sandbox at https://devpaper-code.vercel.app/agent.`;
 
 export default function AiSpecPage() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);

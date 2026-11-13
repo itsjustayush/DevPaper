@@ -3,6 +3,7 @@ import './globals.css';
 import { AstryxProvider } from '@/components/ui/AstryxProvider';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://devpaper-code.vercel.app'),
   title: 'DevPaper — Code Presentation & Typesetting Studio',
   description:
     'An open-source, web-based code presentation and typesetting studio. Merging the visual polish of ray.so, Carbon, and Glyph with a document-grade pagination engine for beautiful code snippets and multi-page documents.',
@@ -16,7 +17,23 @@ export const metadata: Metadata = {
     'syntax highlighter',
     'astryx',
   ],
-  authors: [{ name: 'DevPaper Contributors' }],
+  authors: [{ name: 'Ayush', url: 'https://github.com/itsjustayush' }],
+  creator: 'Ayush (@itsjustayush)',
+  openGraph: {
+    title: 'DevPaper — Code Presentation & Typesetting Studio',
+    description:
+      'The aesthetic code presentation studio and document-grade pagination engine. Export crisp PNGs, SVGs, multi-page PDFs, and ZIP archives.',
+    url: 'https://devpaper-code.vercel.app',
+    siteName: 'DevPaper',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DevPaper — Code Presentation & Typesetting Studio',
+    description:
+      'The aesthetic code presentation studio and document-grade pagination engine.',
+    creator: '@itsjustayush',
+  },
 };
 
 export default function RootLayout({

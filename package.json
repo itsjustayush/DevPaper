@@ -4,6 +4,7 @@
   "description": "The aesthetic code presentation studio & multi-page typesetting engine",
   "author": "Ayush (@itsjustayush) <itsjustayush.dev@gmail.com>",
   "license": "MIT",
+  "homepage": "https://devpaper-code.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/DevPaper/devpaper.git"

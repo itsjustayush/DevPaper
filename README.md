@@ -1,8 +1,10 @@
 # DevPaper
 
 > **The aesthetic code presentation studio & multi-page typesetting engine.**  
-> Merging the visual polish of modern code-image generators (**ray.so**, **Carbon**, **Glyph**) with a document-grade pagination engine (**Google Docs / MS Word for code**) and a headless Python microservice for AI agents.
+> Merging the visual polish of modern code-image generators (**ray.so**, **Carbon**, **Glyph**) with a document-grade pagination engine (**Google Docs / MS Word for code**) and a headless Python microservice for AI agents.  
+> 🌐 **Live Web App**: [https://devpaper-code.vercel.app](https://devpaper-code.vercel.app)
 
+[![Live Studio](https://img.shields.io/badge/Live_App-devpaper--code.vercel.app-000000?style=flat&logo=vercel)](https://devpaper-code.vercel.app)
 [![CI Status](https://github.com/DevPaper/devpaper/actions/workflows/ci.yml/badge.svg)](https://github.com/DevPaper/devpaper/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Author: Ayush](https://img.shields.io/badge/Author-Ayush%20(@itsjustayush)-blue.svg)](https://github.com/itsjustayush)
@@ -34,10 +36,10 @@ Traditional code screenshot tools (such as Ray.so and Carbon) create beautiful s
 DevPaper exposes four clearly-defined public interfaces:
 
 1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `http://localhost:8000` for generating vector SVG, PDF, or ZIP packages.
-2. **AI Agent Specifications**:
-   - [`/ai.txt`](public/ai.txt): Ultra-compact, token-efficient system prompt directive for LLMs.
-   - [`/agent.json`](public/agent.json): OpenAPI-compliant JSON schema for automated tool calling.
-   - `/agent`: Interactive developer playground, live SVG sandbox, and system prompt library.
+2. **AI Agent Specifications & Hub**:
+   - Live Studio & Hub: [https://devpaper-code.vercel.app/agent](https://devpaper-code.vercel.app/agent)
+   - Plaintext Prompt Directive: [`https://devpaper-code.vercel.app/ai.txt`](https://devpaper-code.vercel.app/ai.txt)
+   - Machine-Readable Schema: [`https://devpaper-code.vercel.app/agent.json`](https://devpaper-code.vercel.app/agent.json)
 3. **Core TypeScript Engine (Library Mode)**:
    - `src/core/paginator.ts`: Pure mathematical code-flow calculator (`calculatePagination(...)`).
    - `src/core/syntax.ts`: Universal syntax highlighter with automatic language detection.
@@ -339,7 +341,12 @@ Returns available window chrome frame styles:
 
 ## 🚀 Quick Start
 
-### 1. Web Studio (Frontend)
+### 🌐 Live Production Studio
+Open **[https://devpaper-code.vercel.app](https://devpaper-code.vercel.app)** in any modern web browser — no installation needed.
+
+### 💻 Local Development Setup
+
+#### 1. Web Studio (Frontend)
 
 ```bash
 # Clone the repository
@@ -353,7 +360,7 @@ npm install
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to open DevPaper Studio.
+Visit [http://localhost:3000](http://localhost:3000) to open DevPaper Studio locally.
 
 ### 2. Headless Python Backend
 

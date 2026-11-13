@@ -10,7 +10,7 @@ authors:
 title: "DevPaper: Code Presentation and Multi-Page Typesetting Studio"
 version: 1.0.0
 date-released: 2026-11-13
-url: "https://github.com/DevPaper/devpaper"
+url: "https://devpaper-code.vercel.app"
 repository-code: "https://github.com/DevPaper/devpaper"
 license: MIT
 keywords:
