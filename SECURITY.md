@@ -24,8 +24,8 @@ If you believe you have found a security vulnerability in DevPaper, please repor
 1. **GitHub Private Vulnerability Reporting (Preferred):**  
    Navigate to the repository's [Security Tab](https://github.com/DevPaper/devpaper/security/advisories/new) and click **"Report a vulnerability"**. This creates an encrypted, private advisory draft visible only to maintainers.
 
-2. **Security Email:**  
-   If you cannot use GitHub Security Advisories, send an email to **security@devpaper.org** with the subject line `[SECURITY] DevPaper Vulnerability Report`.
+2. **Direct Security Contact:**  
+   If you cannot use GitHub Security Advisories, send an email directly to **itsjustayush.dev@gmail.com** with the subject line `[SECURITY] DevPaper Vulnerability Report`.
 
 ### What to Include in Your Report
 To help us triage and resolve the issue quickly, please include:

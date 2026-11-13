@@ -416,7 +416,7 @@ Please also read our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participati
 
 ## 🔒 Security
 
-For security vulnerability reporting, please see [SECURITY.md](SECURITY.md). Please report vulnerabilities privately via [GitHub Security Advisories](https://github.com/DevPaper/devpaper/security/advisories/new) or by emailing **security@devpaper.org**.
+For security vulnerability reporting, please see [SECURITY.md](SECURITY.md). Please report vulnerabilities privately via [GitHub Security Advisories](https://github.com/DevPaper/devpaper/security/advisories/new) or by emailing **itsjustayush.dev@gmail.com**.
 
 ---
 
@@ -436,9 +436,11 @@ If you use DevPaper in academic research, technical papers, or documentation, pl
 
 ---
 
-## ⚖️ Authors & Legal Notices
+## ⚖️ Authors, Contact & Legal Notices
 
 DevPaper is authored, designed, and maintained by **Ayush** ([@itsjustayush](https://github.com/itsjustayush)) along with the DevPaper Contributors.
+
+For any questions, support, or direct contact, reach out to **itsjustayush.dev@gmail.com**.
 
 ### License
 DevPaper is open-source software licensed under the **[MIT License](LICENSE)** (an OSI-approved permissive license):

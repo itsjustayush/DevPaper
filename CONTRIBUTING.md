@@ -230,5 +230,6 @@ export const PAPER_REGISTRY: Record<string, PaperPreset> = {
 * **Report a Bug**: [Open a Bug Report](https://github.com/DevPaper/devpaper/issues/new?template=bug_report.yml)
 * **Request a Feature**: [Open a Feature Request](https://github.com/DevPaper/devpaper/issues/new?template=feature_request.yml)
 * **Submit Usage to Adopters**: [Submit to Used by](https://github.com/DevPaper/devpaper/issues/new?template=used_by.yml)
+* **Direct Contact & Inquiries**: Email **itsjustayush.dev@gmail.com**
 * **Security Advisories**: Follow [SECURITY.md](SECURITY.md) for private vulnerability reporting.
 * **Code of Conduct**: All participants are expected to adhere to our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

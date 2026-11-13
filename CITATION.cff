@@ -3,6 +3,7 @@ message: "If you use this software in your research, papers, or documentation, p
 authors:
   - name: "Ayush"
     alias: "itsjustayush"
+    email: "itsjustayush.dev@gmail.com"
     website: "https://github.com/itsjustayush"
   - name: "DevPaper Contributors"
     website: "https://github.com/DevPaper/devpaper"
