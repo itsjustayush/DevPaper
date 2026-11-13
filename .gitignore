@@ -30,3 +30,12 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
+
+# python & backend
+backend/.venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/

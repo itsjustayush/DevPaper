@@ -1,0 +1,48 @@
+{
+  "name": "DevPaper Typesetting Engine",
+  "version": "1.0.0",
+  "description": "Headless code presentation studio for generating vector SVGs, multi-page PDFs, and ZIP archives from source code.",
+  "auth": "none",
+  "base_url": "http://localhost:8000",
+  "documentation_url": "http://localhost:3000/agent",
+  "ai_spec_url": "http://localhost:3000/ai",
+  "endpoints": {
+    "single_snippet": {
+      "method": "POST",
+      "path": "/api/v1/snippet",
+      "description": "Typeset a single code block into SVG, PDF, or HTML",
+      "request_body": {
+        "code": "string (required)",
+        "language": "string (optional, default: auto)",
+        "file_name": "string (optional, default: snippet.ts)",
+        "theme": "string (optional, default: tokyo-night)",
+        "background": "string (optional, default: cosmic-sunset)",
+        "frame": "string (optional, default: macos)",
+        "format": "string (optional: svg | pdf | html, default: svg)",
+        "show_line_numbers": "boolean (optional, default: true)"
+      }
+    },
+    "direct_image_url": {
+      "method": "GET",
+      "path": "/api/v1/snippet",
+      "description": "Direct image URL for READMEs and web pages",
+      "query_params": {
+        "code": "string (required)",
+        "lang": "string (optional)",
+        "theme": "string (optional)",
+        "bg": "string (optional)",
+        "name": "string (optional)"
+      }
+    },
+    "batch_files": {
+      "method": "POST",
+      "path": "/api/v1/files",
+      "description": "Batch typeset multiple source files into ZIP archive or multi-page PDF",
+      "request_body": {
+        "files": "array of {name, code, language}",
+        "format": "string (zip | pdf, default: zip)",
+        "archive_name": "string"
+      }
+    }
+  }
+}

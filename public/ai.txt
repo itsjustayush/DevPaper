@@ -1,0 +1,75 @@
+# DevPaper API Specification for AI Agents
+# Canonical URL: /ai.txt
+# Full UI & Sandbox: /agent
+
+DevPaper is an open, zero-auth, high-performance code presentation and typesetting engine.
+AI agents can call this API to generate beautiful code images (SVG, PNG, PDF, ZIP) for documentation, README hero banners, code review comments, and multi-page technical manuals.
+
+## 1. Endpoints Overview (Base URL: http://localhost:8000 or production host)
+
+- POST /api/v1/snippet -> Typesets a single code block into an SVG, PDF, or HTML.
+- GET  /api/v1/snippet -> Direct image URL for Markdown/README/HTML (<img src="...">).
+- POST /api/v1/files   -> Batch renders multiple files into a bundled ZIP or merged PDF.
+- GET  /api/v1/themes  -> Lists available syntax color themes.
+- GET  /api/v1/fonts   -> Lists available typography choices.
+- GET  /api/v1/frames  -> Lists available window chrome frames.
+
+No API keys, headers, or authentication required.
+
+## 2. Generate Single Code Snippet (POST /api/v1/snippet)
+
+Payload (JSON):
+```json
+{
+  "code": "print('hello world')",
+  "language": "python",
+  "file_name": "example.py",
+  "theme": "tokyo-night",
+  "background": "cosmic-sunset",
+  "font": "jetbrains-mono",
+  "frame": "macos",
+  "show_line_numbers": true,
+  "format": "svg"
+}
+```
+Available Formats: "svg" (default, vector-crisp), "pdf" (vector PDF), "html"
+Themes: "tokyo-night", "one-dark-pro", "dracula", "catppuccin", "nord", "monokai", "github-dark", "github-light", "synthwave-84"
+Backgrounds: "cosmic-sunset", "aurora", "neon-dusk", "ember-glow", "ocean-abyss", "obsidian", "transparent"
+Frames: "macos", "macos-outline", "macos-monochrome", "windows", "terminal", "minimal", "none"
+
+Example cURL:
+```bash
+curl -X POST http://localhost:8000/api/v1/snippet \
+  -H "Content-Type: application/json" \
+  -d '{"code":"const add = (a, b) => a + b;","language":"typescript","file_name":"math.ts","format":"svg"}' \
+  --output math.svg
+```
+
+## 3. Direct Markdown/README Image URL (GET /api/v1/snippet)
+
+Embed directly in GitHub README.md or website HTML:
+```markdown
+![Code Architecture](http://localhost:8000/api/v1/snippet?code=SELECT%20*%20FROM%20users&lang=sql&theme=tokyo-night&name=query.sql)
+```
+
+## 4. Multi-File Batch to ZIP or Merged PDF (POST /api/v1/files)
+
+Payload (JSON):
+```json
+{
+  "files": [
+    {"name": "index.ts", "code": "export const app = 'DevPaper';", "language": "typescript"},
+    {"name": "utils.ts", "code": "export function log(msg) { console.log(msg); }", "language": "typescript"}
+  ],
+  "format": "zip",
+  "theme": "tokyo-night",
+  "archive_name": "project-snippets"
+}
+```
+Returns a downloadable ZIP containing `source/` code and `snippets/*.svg` vector files.
+
+## 5. When Should an Agent Use DevPaper?
+- User requests code documentation, architectural diagrams, or README hero headers.
+- Visualizing diffs or code changes with syntax highlighting.
+- Generating printable technical cheat-sheets or multi-page PDF guides.
+- Creating downloadable code bundles for users.

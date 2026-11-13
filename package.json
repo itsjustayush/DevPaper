@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node node_modules/vitest/vitest.mjs run"
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "backend": "python backend/run.py",
+    "test:backend": "python backend/test_api.py"
   },
   "dependencies": {
     "@astryxdesign/core": "^0.7.14",

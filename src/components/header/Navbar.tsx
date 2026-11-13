@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   Share2,
   Download,
   Copy,
   Check,
+  Bot,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -137,6 +139,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Download className="w-3.5 h-3.5" />
           <span>Export</span>
         </button>
+
+        {/* API & AI Agent Hub */}
+        <Link
+          href="/agent"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/70 hover:bg-zinc-850 hover:border-zinc-700 text-xs font-medium text-zinc-300 transition"
+          title="DevPaper Headless API & Agent Prompt Hub"
+        >
+          <Bot className="w-3.5 h-3.5 text-emerald-400" />
+          <span>API / Agent</span>
+        </Link>
 
         <div className="w-[1px] h-4 bg-zinc-800 mx-1 hidden sm:block" />
 
