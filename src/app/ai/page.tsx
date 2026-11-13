@@ -196,8 +196,8 @@ export default function AiSpecPage() {
         </section>
 
         {/* Footer */}
-        <div className="pt-6 border-t border-zinc-800 text-center text-xs text-zinc-500">
-          DevPaper • Open Source Code Presentation Studio • No API Keys Required
+        <div className="pt-6 border-t border-zinc-800 text-center text-xs text-zinc-500 font-mono">
+          DevPaper • Open Source Code Presentation Studio • Authored by Ayush (<a href="https://github.com/itsjustayush" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-300 underline">@itsjustayush</a>) • MIT License
         </div>
       </div>
     </div>
