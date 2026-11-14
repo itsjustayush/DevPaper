@@ -92,35 +92,40 @@ Content-Type: application/json
 
 **cURL Example:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/snippet \
+mkdir -p devpaper
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet \
   -H "Content-Type: application/json" \
   -d '{"code":"print(\"Hello World\")","language":"python","file_name":"hello.py","format":"svg"}' \
-  --output hello.svg
+  --output devpaper/hello.svg
 ```
 
-**Python Example (Passing File Path Directly):**
+**Python Example (Passing Code in "" OR File Path Directly):**
 ```python
+import os
 import requests
 
-# Pass any file path directly in 'code' or 'file_path'!
-res = requests.post("http://localhost:8000/api/v1/snippet", json={
+os.makedirs("devpaper", exist_ok=True)
+
+# The 'code' field accepts raw code in "" OR a local file path (e.g. "main.py")!
+res = requests.post("https://devpaper-code.vercel.app/api/v1/snippet", json={
     "code": "samplegreet.ts",
     "theme": "one-dark-pro",
     "background": "cosmic-sunset",
     "format": "pdf"
 })
 
-with open("greet.pdf", "wb") as f:
+with open("devpaper/greet.pdf", "wb") as f:
     f.write(res.content)
 ```
 
 **Direct Multipart Upload (`POST /api/v1/snippet/upload`):**
 ```bash
-curl -X POST http://localhost:8000/api/v1/snippet/upload \
+mkdir -p devpaper
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet/upload \
   -F "file=@main.py" \
   -F "theme=tokyo-night" \
   -F "format=pdf" \
-  --output main.pdf
+  --output devpaper/main.pdf
 ```
 
 ---
@@ -130,7 +135,7 @@ curl -X POST http://localhost:8000/api/v1/snippet/upload \
 Allows generating snippet images directly via URL query parameters for GitHub `README.md` or website HTML `<img />` tags without saving locally.
 
 ```markdown
-![Architecture](http://localhost:8000/api/v1/snippet?code=SELECT%20*%20FROM%20users&lang=sql&theme=tokyo-night&name=query.sql)
+![Architecture](https://devpaper-code.vercel.app/api/v1/snippet?code=SELECT%20*%20FROM%20users&lang=sql&theme=tokyo-night&name=query.sql)
 ```
 
 **Query Parameters:**

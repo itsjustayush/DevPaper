@@ -139,7 +139,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python run.py
 ```
-Open [http://localhost:8000/docs](http://localhost:8000/docs) for the interactive Swagger API documentation.
+Open [https://devpaper-code.vercel.app/docs](https://devpaper-code.vercel.app/docs) (or local [http://localhost:8000/docs](http://localhost:8000/docs)) for the interactive Swagger API documentation.
 
 ### Running Test Suites
 ```bash

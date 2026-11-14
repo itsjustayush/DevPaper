@@ -6,7 +6,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field, model_validator
 
 class SnippetRequest(BaseModel):
-    code: Optional[str] = Field(None, description="Source code text to typeset, or path to a local file")
+    code: Optional[str] = Field(None, description="Source code text inside quotes \"...\", OR path to a local file (e.g. 'main.py', 'samplegreet.ts')")
     file_path: Optional[str] = Field(None, description="Path to a local file to read and typeset directly")
     language: Optional[str] = Field("auto", description="Programming language (e.g. python, typescript, rust, go, sql, bash)")
     file_name: Optional[str] = Field(None, description="File name displayed in window header (auto-detected if omitted)")

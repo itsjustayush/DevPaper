@@ -27,9 +27,8 @@ const AGENT_SYSTEM_PROMPT = `You have access to the DevPaper Headless Typesettin
 - Workspace Output Convention: When generating, downloading, or saving any DevPaper artifact (.pdf, .svg, .png, .zip), ALWAYS save it into the \`/devpaper\` directory at the root of the workspace (./devpaper/<file_name>.<ext>).
 
 ### Base URL & Hosted Studio:
-- Live Web App: https://devpaper-code.vercel.app
+- Live Web App & Canonical API: https://devpaper-code.vercel.app
 - Agent Specification: https://devpaper-code.vercel.app/ai.txt | https://devpaper-code.vercel.app/agent.json
-- API Service (Local / Microservice): http://localhost:8000
 - Zero authentication or API keys required.
 
 ### When to Use DevPaper:
@@ -39,12 +38,12 @@ const AGENT_SYSTEM_PROMPT = `You have access to the DevPaper Headless Typesettin
 4. Code Bundling: When packaging multiple files, generate a clean ZIP archive with both source and rendered images.
 
 ### How to Generate a Single Snippet (POST /api/v1/snippet):
-Endpoint: POST http://localhost:8000/api/v1/snippet
+Endpoint: POST https://devpaper-code.vercel.app/api/v1/snippet
 Content-Type: application/json
 
 Payload:
 {
-  "code": "<source code string or file_path>",
+  "code": "<source code string in quotes \"\" OR local file_path (e.g. 'main.py')>",
   "language": "python" | "typescript" | "rust" | "go" | "auto",
   "file_name": "example.py",
   "theme": "tokyo-night" | "one-dark-pro" | "dracula" | "catppuccin" | "nord" | "github-dark",
@@ -56,10 +55,10 @@ Payload:
 
 ### How to Embed in Markdown (GET /api/v1/snippet):
 You can embed live snippet images directly in Markdown or HTML without downloading files:
-![Code Architecture](http://localhost:8000/api/v1/snippet?code=<url_encoded_code>&lang=python&name=main.py)
+![Code Architecture](https://devpaper-code.vercel.app/api/v1/snippet?code=<url_encoded_code>&lang=python&name=main.py)
 
 ### How to Batch Render Multiple Files to ZIP (POST /api/v1/files):
-Endpoint: POST http://localhost:8000/api/v1/files
+Endpoint: POST https://devpaper-code.vercel.app/api/v1/files
 Payload:
 {
   "files": [
@@ -123,7 +122,7 @@ export default function AgentDocsPage() {
     );
 
     return `mkdir -p devpaper
-curl -X POST http://localhost:8000/api/v1/snippet \\
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet \\
   -H "Content-Type: application/json" \\
   -d '${payload.replace(/'/g, "'\\''")}' \\
   --output devpaper/${fileName.replace(/\.[^/.]+$/, '')}.svg`;
@@ -137,7 +136,7 @@ import requests
 os.makedirs("devpaper", exist_ok=True)
 
 payload = {
-    "code": """${code}""",
+    "code": """${code}""", # Accepts code string inside quotes "" OR a local file path (e.g. "main.py")
     "language": "${language}",
     "file_name": "${fileName}",
     "theme": "${theme}",
@@ -145,7 +144,7 @@ payload = {
     "format": "svg"
 }
 
-response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
+response = requests.post("https://devpaper-code.vercel.app/api/v1/snippet", json=payload)
 output_path = os.path.join("devpaper", "${fileName.replace(/\.[^/.]+$/, '')}.svg")
 with open(output_path, "wb") as f:
     f.write(response.content)

@@ -7,7 +7,7 @@
   "auth": "none",
   "storage": "none (zero cloud retention, in-memory ephemeral)",
   "workspace_output_dir": "devpaper/",
-  "base_url": "http://localhost:8000",
+  "base_url": "https://devpaper-code.vercel.app",
   "root_url": "https://devpaper-code.vercel.app",
   "documentation_url": "https://devpaper-code.vercel.app/agent",
   "ai_spec_url": "https://devpaper-code.vercel.app/ai",
@@ -17,7 +17,7 @@
       "path": "/api/v1/snippet",
       "description": "Typeset a single code block into SVG, PDF, or HTML",
       "request_body": {
-        "code": "string (required)",
+        "code": "string (required: raw code in \"\" OR local file path e.g. 'main.py')",
         "language": "string (optional, default: auto)",
         "file_name": "string (optional, default: snippet.ts)",
         "theme": "string (optional, default: tokyo-night)",

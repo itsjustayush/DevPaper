@@ -61,7 +61,7 @@ print(f"Fibonacci: {fib_sequence}")
 
 DevPaper exposes four clearly-defined public interfaces:
 
-1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `http://localhost:8000` for generating vector SVG, PDF, or ZIP packages.
+1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `https://devpaper-code.vercel.app` (and locally at `http://localhost:8000`) for generating vector SVG, PDF, or ZIP packages.
 2. **AI Agent Specifications & Hub**:
    - Live Studio & Hub: [https://devpaper-code.vercel.app/agent](https://devpaper-code.vercel.app/agent)
    - Plaintext Prompt Directive: [`https://devpaper-code.vercel.app/ai.txt`](https://devpaper-code.vercel.app/ai.txt)
@@ -82,8 +82,8 @@ DevPaper exposes four clearly-defined public interfaces:
 
 The DevPaper Headless API runs on Python (FastAPI + Pygments + ReportLab) with **zero authentication required** and **CORS enabled (`*`)**, making it effortlessly callable by local CLI scripts, web apps, and AI coding agents.
 
-* **Base URL**: `http://localhost:8000` (or your deployed host)
-* **Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI) / [http://localhost:8000/redoc](http://localhost:8000/redoc) (ReDoc)
+* **Base URL**: `https://devpaper-code.vercel.app` (or your local microservice)
+* **Interactive Docs**: [https://devpaper-code.vercel.app/docs](https://devpaper-code.vercel.app/docs) (Swagger UI) / [https://devpaper-code.vercel.app/redoc](https://devpaper-code.vercel.app/redoc) (ReDoc)
 * **Auth**: None required (open public endpoints)
 
 ### Endpoint Summary
@@ -131,7 +131,7 @@ Content-Type: application/json
 
 | Field | Type | Default | Required | Description |
 |---|---|---|:---:|---|
-| `code` | `string` | — | **Yes** | Source code to be typeset. |
+| `code` | `string` | — | **Yes** | Source code to be typeset inside quotes `""`, OR path to a local file (e.g. `"main.py"`). |
 | `language` | `string` | `"auto"` | No | Target language (e.g. `python`, `typescript`, `rust`, `go`, `sql`). Auto-detected if `"auto"`. |
 | `file_name` | `string` | `"snippet.txt"` | No | File name displayed in the window header chrome. |
 | `theme` | `string` | `"tokyo-night"` | No | Theme ID: `tokyo-night`, `one-dark-pro`, `dracula`, `catppuccin`, `nord`, `monokai`, `github-dark`, `github-light`, `synthwave-84`. |
@@ -156,7 +156,7 @@ Binary stream with `Content-Disposition: attachment; filename="<file_name>.<form
 ```bash
 # Save to the /devpaper workspace directory:
 mkdir -p devpaper
-curl -X POST http://localhost:8000/api/v1/snippet \
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet \
   -H "Content-Type: application/json" \
   -d '{
     "code": "def quicksort(arr):\n    if len(arr) <= 1: return arr\n    pivot = arr[len(arr) // 2]\n    return quicksort([x for x in arr if x < pivot]) + [x for x in arr if x == pivot] + quicksort([x for x in arr if x > pivot])",
@@ -186,7 +186,7 @@ payload = {
     "format": "svg"
 }
 
-response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
+response = requests.post("https://devpaper-code.vercel.app/api/v1/snippet", json=payload)
 with open("devpaper/greet.svg", "wb") as f:
     f.write(response.content)
 ```
@@ -209,7 +209,7 @@ payload = {
     "format": "pdf"                # Generates a vector PDF directly from the file!
 }
 
-response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
+response = requests.post("https://devpaper-code.vercel.app/api/v1/snippet", json=payload)
 with open("devpaper/greet.pdf", "wb") as f:
     f.write(response.content)
 ```
@@ -220,7 +220,7 @@ You can also upload source files directly using standard multipart form-data:
 ```bash
 # Upload a file via curl and get a vector PDF in devpaper/:
 mkdir -p devpaper
-curl -X POST http://localhost:8000/api/v1/snippet/upload \
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet/upload \
   -F "file=@main.py" \
   -F "theme=tokyo-night" \
   -F "format=pdf" \
@@ -229,7 +229,7 @@ curl -X POST http://localhost:8000/api/v1/snippet/upload \
 
 #### Example JavaScript / TypeScript (`fetch`)
 ```typescript
-const response = await fetch("http://localhost:8000/api/v1/snippet", {
+const response = await fetch("https://devpaper-code.vercel.app/api/v1/snippet", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -252,12 +252,12 @@ Allows embedding live syntax-highlighted code images directly into markdown file
 
 #### URL Syntax:
 ```markdown
-![Hero Snippet](http://localhost:8000/api/v1/snippet?code=SELECT%20*%20FROM%20users%20WHERE%20active%20=%20true;&lang=sql&name=query.sql&theme=tokyo-night&bg=cosmic-sunset)
+![Hero Snippet](https://devpaper-code.vercel.app/api/v1/snippet?code=SELECT%20*%20FROM%20users%20WHERE%20active%20=%20true;&lang=sql&name=query.sql&theme=tokyo-night&bg=cosmic-sunset)
 ```
 
 #### HTML Syntax:
 ```html
-<img src="http://localhost:8000/api/v1/snippet?code=const+pi+=+3.14159;&lang=typescript&name=math.ts" alt="Code Snippet" />
+<img src="https://devpaper-code.vercel.app/api/v1/snippet?code=const+pi+=+3.14159;&lang=typescript&name=math.ts" alt="Code Snippet" />
 ```
 
 #### Query Parameters:
@@ -324,7 +324,7 @@ microservice-bundle.zip
 ```bash
 # Save bundle into the /devpaper directory:
 mkdir -p devpaper
-curl -X POST http://localhost:8000/api/v1/files \
+curl -X POST https://devpaper-code.vercel.app/api/v1/files \
   -H "Content-Type: application/json" \
   -d '{
     "files": [
@@ -463,7 +463,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-The API starts at [http://localhost:8000](http://localhost:8000) (Interactive Swagger docs: `/docs`).
+The API runs at [https://devpaper-code.vercel.app](https://devpaper-code.vercel.app) (and locally at [http://localhost:8000](http://localhost:8000); Interactive Swagger docs: `/docs`).
 
 ---
 

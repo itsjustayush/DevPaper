@@ -9,7 +9,7 @@ AI agents can call this API to generate beautiful code images (SVG, PNG, PDF, ZI
 - ZERO CLOUD RETENTION: DevPaper does NOT store or persist any code on the cloud. All operations are ephemeral and processed in-memory (or 100% client-side in the browser).
 - WORKSPACE DIRECTORY: When an AI agent generates, downloads, or outputs any DevPaper artifact (.pdf, .svg, .png, .zip), ALWAYS save it into the `./devpaper/` directory in the root of the workspace (e.g. `./devpaper/<filename>.<ext>`). Create the directory if it does not exist.
 
-## 1. Endpoints Overview (Base URL: http://localhost:8000 or production host)
+## 1. Endpoints Overview (Base URL: https://devpaper-code.vercel.app)
 
 - POST /api/v1/snippet -> Typesets a single code block into an SVG, PDF, or HTML.
 - GET  /api/v1/snippet -> Direct image URL for Markdown/README/HTML (<img src="...">).
@@ -25,7 +25,7 @@ No API keys, headers, or authentication required.
 Payload (JSON):
 ```json
 {
-  "code": "print('hello world')", // OR pass local file path: "code": "main.py" or "file_path": "main.py"
+  "code": "print('hello world')", // Accepts raw code string in quotes "" OR local file path: "main.py"
   "language": "python",
   "file_name": "example.py",
   "theme": "tokyo-night",
@@ -37,7 +37,7 @@ Payload (JSON):
 }
 ```
 Direct File Upload:
-POST /api/v1/snippet/upload with multipart form field 'file=@main.py' and 'format=pdf'.
+POST https://devpaper-code.vercel.app/api/v1/snippet/upload with multipart form field 'file=@main.py' and 'format=pdf'.
 Available Formats: "svg" (default, vector-crisp), "pdf" (vector PDF), "html"
 Themes: "tokyo-night", "one-dark-pro", "dracula", "catppuccin", "nord", "monokai", "github-dark", "github-light", "synthwave-84"
 Backgrounds: "cosmic-sunset", "aurora", "neon-dusk", "ember-glow", "ocean-abyss", "obsidian", "transparent"
@@ -46,7 +46,7 @@ Frames: "macos", "macos-outline", "macos-monochrome", "windows", "terminal", "mi
 Example cURL:
 ```bash
 mkdir -p devpaper
-curl -X POST http://localhost:8000/api/v1/snippet \
+curl -X POST https://devpaper-code.vercel.app/api/v1/snippet \
   -H "Content-Type: application/json" \
   -d '{"code":"const add = (a, b) => a + b;","language":"typescript","file_name":"math.ts","format":"svg"}' \
   --output devpaper/math.svg
@@ -56,7 +56,7 @@ curl -X POST http://localhost:8000/api/v1/snippet \
 
 Embed directly in GitHub README.md or website HTML:
 ```markdown
-![Code Architecture](http://localhost:8000/api/v1/snippet?code=SELECT%20*%20FROM%20users&lang=sql&theme=tokyo-night&name=query.sql)
+![Code Architecture](https://devpaper-code.vercel.app/api/v1/snippet?code=SELECT%20*%20FROM%20users&lang=sql&theme=tokyo-night&name=query.sql)
 ```
 
 ## 4. Multi-File Batch to ZIP or Merged PDF (POST /api/v1/files)

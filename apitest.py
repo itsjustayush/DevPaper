@@ -17,7 +17,7 @@ import sys
 import os
 import requests
 
-API_BASE_URL = os.environ.get("DEVPAPER_API_URL", "http://localhost:8000")
+API_BASE_URL = os.environ.get("DEVPAPER_API_URL", "https://devpaper-code.vercel.app")
 
 # Programmatic Workspace Output Directory (/devpaper)
 WORKSPACE_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -71,16 +71,17 @@ def run_tests():
     else:
         print(f"✓ Using source file: '{target_file}'")
 
-    online = is_server_online(API_BASE_URL)
     pdf_out = os.path.join(OUTPUT_DIR, "greet.pdf")
     svg_out = os.path.join(OUTPUT_DIR, "greet.svg")
 
-    if online:
-        print(f"\n[Mode: Live HTTP Server] Connected to {API_BASE_URL}")
+    active_url = API_BASE_URL if is_server_online(API_BASE_URL) else ("http://localhost:8000" if is_server_online("http://localhost:8000") else None)
+
+    if active_url:
+        print(f"\n[Mode: Live HTTP Server] Connected to {active_url}")
         # Test 1: JSON File payload
-        endpoint = f"{API_BASE_URL}/api/v1/snippet"
+        endpoint = f"{active_url}/api/v1/snippet"
         payload = {
-            "code": target_file,  # Pass the file path directly in 'code' or 'file_path'!
+            "code": target_file,  # The 'code' field accepts code string in "" OR a local file path!
             "file_name": "greet.ts",
             "theme": "one-dark-pro",
             "background": "cosmic-sunset",
@@ -94,7 +95,7 @@ def run_tests():
         print(f"✓ [JSON File Path] Generated '{pdf_out}' ({len(res.content)} bytes)")
 
         # Test 2: Multipart Upload
-        upload_endpoint = f"{API_BASE_URL}/api/v1/snippet/upload"
+        upload_endpoint = f"{active_url}/api/v1/snippet/upload"
         with open(target_file, "rb") as f:
             files = {"file": (target_file, f, "text/plain")}
             data = {"theme": "tokyo-night", "format": "svg"}

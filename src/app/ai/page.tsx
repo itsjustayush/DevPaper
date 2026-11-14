@@ -16,10 +16,12 @@ import {
 } from 'lucide-react';
 
 const COMPACT_PROMPT_DIRECTIVE = `DevPaper API Directive for Coding Agents:
-Use DevPaper (https://devpaper-code.vercel.app or local http://localhost:8000) to typeset code into vector SVG or PDF.
-- Single snippet: POST /api/v1/snippet with {"code":"...","language":"...","file_name":"...","format":"svg"}
-- Markdown embed: <img src="http://localhost:8000/api/v1/snippet?code=...&lang=...&name=...">
-- Multi-file batch: POST /api/v1/files with {"files":[{"name":"...","code":"..."}],"format":"zip"}
+Use DevPaper (https://devpaper-code.vercel.app) to typeset code into vector SVG or PDF.
+- Single snippet: POST https://devpaper-code.vercel.app/api/v1/snippet with {"code":"...","language":"...","file_name":"...","format":"svg"}
+- The "code" parameter accepts raw code string in "" OR a local file path (e.g. "main.py").
+- Markdown embed: <img src="https://devpaper-code.vercel.app/api/v1/snippet?code=...&lang=...&name=...">
+- Multi-file batch: POST https://devpaper-code.vercel.app/api/v1/files with {"files":[{"name":"...","code":"..."}],"format":"zip"}
+- Output convention: Always save downloaded artifacts to ./devpaper/ in the workspace root.
 Full specification available at https://devpaper-code.vercel.app/ai.txt and interactive sandbox at https://devpaper-code.vercel.app/agent.`;
 
 export default function AiSpecPage() {
@@ -191,7 +193,7 @@ export default function AiSpecPage() {
             AI agents can insert direct image tags into generated README files without touching disk:
           </p>
           <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 font-mono text-xs text-zinc-300">
-            <code>{`![Architecture](http://localhost:8000/api/v1/snippet?code=const+config+=+{+port:+8000+};&lang=typescript&name=config.ts)`}</code>
+            <code>{`![Architecture](https://devpaper-code.vercel.app/api/v1/snippet?code=const+config+=+{+port:+8000+};&lang=typescript&name=config.ts)`}</code>
           </div>
         </section>
 
