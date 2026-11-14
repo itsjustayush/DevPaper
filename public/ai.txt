@@ -21,7 +21,7 @@ No API keys, headers, or authentication required.
 Payload (JSON):
 ```json
 {
-  "code": "print('hello world')",
+  "code": "print('hello world')", // OR pass local file path: "code": "main.py" or "file_path": "main.py"
   "language": "python",
   "file_name": "example.py",
   "theme": "tokyo-night",
@@ -32,6 +32,8 @@ Payload (JSON):
   "format": "svg"
 }
 ```
+Direct File Upload:
+POST /api/v1/snippet/upload with multipart form field 'file=@main.py' and 'format=pdf'.
 Available Formats: "svg" (default, vector-crisp), "pdf" (vector PDF), "html"
 Themes: "tokyo-night", "one-dark-pro", "dracula", "catppuccin", "nord", "monokai", "github-dark", "github-light", "synthwave-84"
 Backgrounds: "cosmic-sunset", "aurora", "neon-dusk", "ember-glow", "ocean-abyss", "obsidian", "transparent"

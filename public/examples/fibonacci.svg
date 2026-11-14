@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 592 386" width="592" height="386">
+  <defs>
+    <filter id="devpaper-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    <linearGradient id="devpaper-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f1c2c"/>
+      <stop offset="100%" stop-color="#928dab"/>
+    </linearGradient>
+  </defs>
+  <rect width="592" height="386" rx="24" fill="url(#devpaper-bg)"/>
+  <g filter="url(#devpaper-shadow)">
+    <rect x="48" y="48" width="496" height="290" rx="16" fill="#1a1b26" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+  </g>
+  <path d="M 48 90 L 544 90" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+  <circle cx="68" cy="68" r="6" fill="#ff5f56" />
+  <circle cx="86" cy="68" r="6" fill="#ffbd2e" />
+  <circle cx="104" cy="68" r="6" fill="#27c93f" />
+  <text x="296.0" y="73" text-anchor="middle" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="12" fill="#71717a" font-weight="500">fibonacci.py</text>
+  <text x="528" y="73" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="10" fill="#71717a" font-weight="600" letter-spacing="0.5">PYTHON</text>
+  <text x="90" y="108" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">1</text>
+  <text x="108" y="108" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#bb9af7">def</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#7aa2f7">fibonacci</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#c0caf5">n</tspan>
+<tspan fill="#9abdf5">:</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#2ac3de">int</tspan>
+<tspan fill="#9abdf5">)</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#f87171">-</tspan>
+<tspan fill="#89ddff">&gt;</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#2ac3de">int</tspan>
+<tspan fill="#9abdf5">:</tspan>
+</text>
+  <text x="90" y="130" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">2</text>
+  <text x="108" y="130" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#a9b1d6">    </tspan>
+<tspan fill="#565f89">&quot;&quot;&quot;Return the nth Fibonacci number.&quot;&quot;&quot;</tspan>
+</text>
+  <text x="90" y="152" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">3</text>
+  <text x="108" y="152" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#a9b1d6">    </tspan>
+<tspan fill="#bb9af7">if</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#c0caf5">n</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#89ddff">&lt;</tspan>
+<tspan fill="#89ddff">=</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#ff9e64">1</tspan>
+<tspan fill="#9abdf5">:</tspan>
+</text>
+  <text x="90" y="174" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">4</text>
+  <text x="108" y="174" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#a9b1d6">        </tspan>
+<tspan fill="#bb9af7">return</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#c0caf5">n</tspan>
+</text>
+  <text x="90" y="196" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">5</text>
+  <text x="108" y="196" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#a9b1d6">    </tspan>
+<tspan fill="#bb9af7">return</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#c0caf5">fibonacci</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#c0caf5">n</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#f87171">-</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#ff9e64">1</tspan>
+<tspan fill="#9abdf5">)</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#4ade80">+</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#c0caf5">fibonacci</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#c0caf5">n</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#f87171">-</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#ff9e64">2</tspan>
+<tspan fill="#9abdf5">)</tspan>
+</text>
+  <text x="90" y="218" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">6</text>
+  <text x="108" y="218" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+</text>
+  <text x="90" y="240" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">7</text>
+  <text x="108" y="240" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#565f89"># Compute first 10 Fibonacci numbers</tspan>
+</text>
+  <text x="90" y="262" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">8</text>
+  <text x="108" y="262" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#c0caf5">fib_sequence</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#89ddff">=</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#9abdf5">[</tspan>
+<tspan fill="#c0caf5">fibonacci</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#c0caf5">i</tspan>
+<tspan fill="#9abdf5">)</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#bb9af7">for</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#c0caf5">i</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#89ddff">in</tspan>
+<tspan fill="#a9b1d6"> </tspan>
+<tspan fill="#2ac3de">range</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#ff9e64">10</tspan>
+<tspan fill="#9abdf5">)</tspan>
+<tspan fill="#9abdf5">]</tspan>
+</text>
+  <text x="90" y="284" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">9</text>
+  <text x="108" y="284" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+<tspan fill="#2ac3de">print</tspan>
+<tspan fill="#9abdf5">(</tspan>
+<tspan fill="#9ece6a">f</tspan>
+<tspan fill="#9ece6a">&quot;</tspan>
+<tspan fill="#9ece6a">Fibonacci: </tspan>
+<tspan fill="#9ece6a">{</tspan>
+<tspan fill="#c0caf5">fib_sequence</tspan>
+<tspan fill="#9ece6a">}</tspan>
+<tspan fill="#9ece6a">&quot;</tspan>
+<tspan fill="#9abdf5">)</tspan>
+</text>
+  <text x="90" y="306" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" fill="#414868" select="none">10</text>
+  <text x="108" y="306" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="14" xml:space="preserve">
+</text>
+  <text x="528" y="328" text-anchor="end" font-family=""JetBrains Mono", Menlo, Consolas, Monaco, monospace" font-size="10" fill="rgba(255, 255, 255, 0.25)">DevPaper</text>
+</svg>

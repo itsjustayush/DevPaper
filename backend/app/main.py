@@ -3,13 +3,16 @@ DevPaper Core API Service
 Ultra-fast, zero-auth code typesetting and snippet generation engine for humans and AI agents.
 """
 
-from fastapi import FastAPI, Query, HTTPException, Response
+import os
+from pathlib import Path
+from typing import Optional, Tuple
+from fastapi import FastAPI, Query, HTTPException, Response, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 
-from app.models import SnippetRequest, MultiFileRequest
+from app.models import SnippetRequest, MultiFileRequest, SourceFile
 from app.themes import THEMES, BACKGROUNDS, FONTS
-from app.renderer.svg_engine import render_svg_snippet
+from app.renderer.svg_engine import render_svg_snippet, resolve_language
 from app.renderer.pdf_engine import generate_pdf_document
 from app.renderer.zip_engine import generate_zip_archive
 
@@ -30,13 +33,62 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def resolve_code_source(
+    code: Optional[str] = None,
+    file_path: Optional[str] = None,
+    file_name: Optional[str] = None,
+    language: Optional[str] = "auto",
+) -> Tuple[str, str, str]:
+    """
+    Resolves source code content, file name, and programming language.
+    Supports either direct code string, explicit file_path, or code pointing to an existing file.
+    """
+    target_path = None
+    resolved_code = None
+
+    # Option A: Explicit file_path provided
+    if file_path and file_path.strip():
+        p = Path(file_path.strip())
+        if p.is_file():
+            target_path = p
+        else:
+            raise HTTPException(status_code=404, detail=f"File not found: '{file_path}'")
+
+    # Option B: code is given, but might be a path to a file on disk (e.g. "main.py", "src/app.ts")
+    elif code and isinstance(code, str):
+        stripped = code.strip()
+        # If it doesn't contain newlines, is reasonably short, and exists as a file
+        if "\n" not in stripped and len(stripped) < 512 and Path(stripped).is_file():
+            target_path = Path(stripped)
+        else:
+            resolved_code = code
+
+    # If target_path was identified, read content from disk
+    if target_path:
+        try:
+            resolved_code = target_path.read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to read file '{target_path}': {str(e)}")
+        
+        if not file_name or file_name == "snippet.ts" or file_name == "snippet.txt":
+            file_name = target_path.name
+
+    if not resolved_code or not resolved_code.strip():
+        raise HTTPException(status_code=400, detail="Source code or file content cannot be empty.")
+
+    resolved_filename = file_name or "snippet.txt"
+    resolved_lang = resolve_language(resolved_filename, resolved_code, language or "auto")
+
+    return resolved_code, resolved_filename, resolved_lang
+
+
 @app.get("/api/v1/health")
 async def health_check():
     return {
         "status": "healthy",
         "service": "DevPaper API",
         "version": "1.0.0",
-        "capabilities": ["svg", "pdf", "zip", "multi-page", "multi-file", "auto-detect"],
+        "capabilities": ["svg", "pdf", "zip", "file_path", "multipart-upload", "auto-detect"],
     }
 
 @app.get("/api/v1/themes")
@@ -83,21 +135,25 @@ async def list_frames():
 @app.post("/api/v1/snippet")
 async def create_snippet(req: SnippetRequest):
     """
-    Generate a formatted code snippet image or document from source code.
+    Generate a formatted code snippet image or document from source code or file path.
+    Accepts raw code string or a local file path ('file_path' or 'code').
     Supports SVG, PDF, and HTML output formats.
     """
-    if not req.code or not req.code.strip():
-        raise HTTPException(status_code=400, detail="Code string cannot be empty.")
+    code_text, clean_filename, resolved_lang = resolve_code_source(
+        code=req.code,
+        file_path=req.file_path,
+        file_name=req.file_name,
+        language=req.language,
+    )
 
-    clean_filename = req.file_name.replace("/", "_").replace("\\", "_")
     base_name = clean_filename.rsplit(".", 1)[0] if "." in clean_filename else clean_filename
 
     # Format 1: Multi-Page or Vector PDF Document
-    if req.format.lower() == "pdf":
+    if req.format and req.format.lower() == "pdf":
         pdf_bytes = generate_pdf_document(
-            code=req.code,
-            language=req.language or "auto",
-            file_name=req.file_name,
+            code=code_text,
+            language=resolved_lang,
+            file_name=clean_filename,
             theme_id=req.theme or "tokyo-night",
             paper_size_id=req.paper_size or "a4",
             watermark=req.watermark or "DevPaper Studio",
@@ -110,9 +166,9 @@ async def create_snippet(req: SnippetRequest):
 
     # Format 2: Vector SVG (Default & Recommended for Web / Readmes)
     svg_content = render_svg_snippet(
-        code=req.code,
-        language=req.language or "auto",
-        file_name=req.file_name,
+        code=code_text,
+        language=resolved_lang,
+        file_name=clean_filename,
         theme_id=req.theme or "tokyo-night",
         background_id=req.background or "cosmic-sunset",
         font_id=req.font or "jetbrains-mono",
@@ -125,7 +181,7 @@ async def create_snippet(req: SnippetRequest):
         highlight_lines=req.highlight_lines or [],
     )
 
-    if req.format.lower() == "html":
+    if req.format and req.format.lower() == "html":
         html_page = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -143,14 +199,70 @@ async def create_snippet(req: SnippetRequest):
         content=svg_content,
         media_type="image/svg+xml",
         headers={
-            "Content-Disposition": f'inline; filename="{base_name}.svg"',
+            "Content-Disposition": f'attachment; filename="{base_name}.svg"',
+            "Cache-Control": "public, max-age=86400",
+        },
+    )
+
+@app.post("/api/v1/snippet/upload")
+async def upload_file_snippet(
+    file: UploadFile = File(..., description="File to upload and typeset directly"),
+    theme: str = Form("tokyo-night"),
+    background: str = Form("cosmic-sunset"),
+    font: str = Form("jetbrains-mono"),
+    frame: str = Form("macos"),
+    format: str = Form("svg"),
+    paper_size: str = Form("a4"),
+    show_line_numbers: bool = Form(True),
+):
+    """
+    Direct file upload endpoint for curl, Python requests, or HTML forms.
+    Upload any .py, .ts, .html, .rs, .go file without copying/pasting.
+    """
+    content_bytes = await file.read()
+    code_text = content_bytes.decode("utf-8", errors="replace")
+    file_name = file.filename or "uploaded_code.txt"
+    resolved_lang = resolve_language(file_name, code_text, "auto")
+    base_name = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+
+    if format.lower() == "pdf":
+        pdf_bytes = generate_pdf_document(
+            code=code_text,
+            language=resolved_lang,
+            file_name=file_name,
+            theme_id=theme,
+            paper_size_id=paper_size,
+            watermark="DevPaper Studio",
+        )
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{base_name}.pdf"'},
+        )
+
+    svg_content = render_svg_snippet(
+        code=code_text,
+        language=resolved_lang,
+        file_name=file_name,
+        theme_id=theme,
+        background_id=background,
+        font_id=font,
+        frame_style=frame,
+        show_line_numbers=show_line_numbers,
+    )
+
+    return Response(
+        content=svg_content,
+        media_type="image/svg+xml",
+        headers={
+            "Content-Disposition": f'attachment; filename="{base_name}.svg"',
             "Cache-Control": "public, max-age=86400",
         },
     )
 
 @app.get("/api/v1/snippet")
 async def get_snippet_image(
-    code: str = Query(..., description="Source code text to typeset"),
+    code: str = Query(..., description="Source code text OR local file name/path to typeset"),
     lang: str = Query("auto", description="Programming language"),
     name: str = Query("snippet.ts", description="File name"),
     theme: str = Query("tokyo-night", description="Theme ID"),
@@ -161,10 +273,17 @@ async def get_snippet_image(
     Direct URL image endpoint for READMEs, blogs, and websites.
     Usage: <img src="https://api.devpaper.dev/api/v1/snippet?code=...&lang=python" />
     """
-    svg_content = render_svg_snippet(
+    code_text, resolved_name, resolved_lang = resolve_code_source(
         code=code,
-        language=lang,
+        file_path=None,
         file_name=name,
+        language=lang,
+    )
+
+    svg_content = render_svg_snippet(
+        code=code_text,
+        language=resolved_lang,
+        file_name=resolved_name,
         theme_id=theme,
         background_id=bg,
         show_line_numbers=lines,
@@ -173,7 +292,7 @@ async def get_snippet_image(
         content=svg_content,
         media_type="image/svg+xml",
         headers={
-            "Content-Disposition": f'inline; filename="{name}.svg"',
+            "Content-Disposition": f'inline; filename="{resolved_name}.svg"',
             "Cache-Control": "public, max-age=86400",
         },
     )
@@ -181,17 +300,33 @@ async def get_snippet_image(
 @app.post("/api/v1/files")
 async def create_multi_file_bundle(req: MultiFileRequest):
     """
-    Batch process multiple source files into a bundled ZIP archive or multi-page PDF document.
+    Batch process multiple source files or paths into a bundled ZIP archive or multi-page PDF document.
     """
     if not req.files:
         raise HTTPException(status_code=400, detail="Files list cannot be empty.")
 
     archive_name = req.archive_name or "devpaper-bundle"
 
-    if req.format.lower() == "pdf":
-        # Combine all files into a continuous typeset PDF
+    # Resolve all files (either path on disk or code text)
+    resolved_files: list[SourceFile] = []
+    for f in req.files:
+        code_text, resolved_name, resolved_lang = resolve_code_source(
+            code=f.code,
+            file_path=f.path,
+            file_name=f.name,
+            language=f.language or "auto",
+        )
+        resolved_files.append(
+            SourceFile(
+                name=resolved_name,
+                code=code_text,
+                language=resolved_lang,
+            )
+        )
+
+    if req.format and req.format.lower() == "pdf":
         combined_code = ""
-        for f in req.files:
+        for f in resolved_files:
             combined_code += f"// ==================== {f.name} ====================\n\n{f.code}\n\n"
 
         pdf_bytes = generate_pdf_document(
@@ -210,7 +345,7 @@ async def create_multi_file_bundle(req: MultiFileRequest):
 
     # Default: Bundled ZIP Archive
     zip_bytes = generate_zip_archive(
-        files=req.files,
+        files=resolved_files,
         theme=req.theme or "tokyo-night",
         background=req.background or "cosmic-sunset",
         font=req.font or "jetbrains-mono",
@@ -224,4 +359,3 @@ async def create_multi_file_bundle(req: MultiFileRequest):
         media_type="application/zip",
         headers={"Content-Disposition": f'attachment; filename="{archive_name}.zip"'},
     )
-

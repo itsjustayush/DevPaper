@@ -8,6 +8,7 @@ import {
   Copy,
   Check,
   Bot,
+  FolderOpen,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -16,6 +17,7 @@ interface NavbarProps {
   onOpenExportModal: () => void;
   onQuickCopy: () => void;
   quickCopied: boolean;
+  onOpenFile?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -24,6 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenExportModal,
   onQuickCopy,
   quickCopied,
+  onOpenFile,
 }) => {
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-950/85 backdrop-blur-xl border-b border-zinc-800/80 z-40 px-4 sm:px-6 flex items-center justify-between">
@@ -102,6 +105,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-2">
+        {/* Open Local File */}
+        {onOpenFile && (
+          <button
+            onClick={onOpenFile}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-850 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition cursor-pointer"
+            title="Open local source file (main.py, index.html, etc.)"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Open File</span>
+          </button>
+        )}
         {/* Quick Copy to Clipboard */}
         <button
           onClick={onQuickCopy}

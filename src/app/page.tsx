@@ -98,6 +98,27 @@ export default function DevPaperHome() {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [shareCopied, setShareCopied] = useState<boolean>(false);
   const [quickCopied, setQuickCopied] = useState<boolean>(false);
+  const [isDraggingFile, setIsDraggingFile] = useState<boolean>(false);
+
+  // Hidden File Input for direct file opening (main.py, index.html, etc.)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result;
+      if (typeof text === 'string') {
+        setCode(text);
+        setFileName(file.name);
+        const detected = detectLanguage(file.name, text);
+        if (detected) {
+          setLanguage(detected);
+          setIsAutoDetected(true);
+        }
+      }
+    };
+    reader.readAsText(file);
+  }, []);
 
   // Document Margins
   const margins: PaginatorMargins = useMemo(() => ({
@@ -316,7 +337,48 @@ export default function DevPaperHome() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-zinc-100 antialiased selection:bg-emerald-500/30">
+    <div
+      className="min-h-screen flex flex-col bg-[#090a0f] text-zinc-100 antialiased selection:bg-emerald-500/30 relative"
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDraggingFile(true);
+      }}
+      onDragLeave={(e) => {
+        e.preventDefault();
+        setIsDraggingFile(false);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDraggingFile(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFileSelect(e.dataTransfer.files[0]);
+        }
+      }}
+    >
+      {/* Hidden File Picker Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".py,.ts,.tsx,.js,.jsx,.rs,.go,.c,.cpp,.h,.hpp,.html,.css,.json,.yaml,.yml,.sql,.sh,.bash,.md,.txt,.java,.kt,.swift,.php,.rb"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handleFileSelect(e.target.files[0]);
+          }
+        }}
+      />
+
+      {/* Drag & Drop Overlay */}
+      {isDraggingFile && (
+        <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-md border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center pointer-events-none animate-in fade-in duration-150">
+          <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-700 text-center space-y-2">
+            <span className="text-2xl">📄</span>
+            <p className="text-sm font-semibold text-zinc-100">Drop code file to open</p>
+            <p className="text-xs text-zinc-400">Supports .py, .ts, .html, .rs, .go, .sql, and 100+ formats</p>
+          </div>
+        </div>
+      )}
+
       {/* Top Navigation Bar */}
       <Navbar
         onShareUrl={handleShareUrl}
@@ -324,6 +386,7 @@ export default function DevPaperHome() {
         onOpenExportModal={() => setIsExportModalOpen(true)}
         onQuickCopy={handleCopyClipboard}
         quickCopied={quickCopied}
+        onOpenFile={() => fileInputRef.current?.click()}
       />
 
       {/* Main Studio Workspace */}

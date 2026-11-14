@@ -98,19 +98,29 @@ curl -X POST http://localhost:8000/api/v1/snippet \
   --output hello.svg
 ```
 
-**Python Example:**
+**Python Example (Passing File Path Directly):**
 ```python
 import requests
 
+# Pass any file path directly in 'code' or 'file_path'!
 res = requests.post("http://localhost:8000/api/v1/snippet", json={
-    "code": "console.log('DevPaper');",
-    "language": "javascript",
-    "file_name": "app.js",
-    "format": "svg"
+    "code": "samplegreet.ts",
+    "theme": "one-dark-pro",
+    "background": "cosmic-sunset",
+    "format": "pdf"
 })
 
-with open("snippet.svg", "wb") as f:
+with open("greet.pdf", "wb") as f:
     f.write(res.content)
+```
+
+**Direct Multipart Upload (`POST /api/v1/snippet/upload`):**
+```bash
+curl -X POST http://localhost:8000/api/v1/snippet/upload \
+  -F "file=@main.py" \
+  -F "theme=tokyo-night" \
+  -F "format=pdf" \
+  --output main.pdf
 ```
 
 ---

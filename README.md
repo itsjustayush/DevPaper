@@ -31,6 +31,32 @@ Traditional code screenshot tools (such as Ray.so and Carbon) create beautiful s
 
 ---
 
+## ⚡ Visual Comparison: Standard Markdown vs. DevPaper Typesetting
+
+See the dramatic difference between standard plain Markdown and DevPaper's vector presentation engine:
+
+### 1. Standard Plain Markdown Code Block
+```python
+def fibonacci(n: int) -> int:
+    """Return the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+# Compute first 10 Fibonacci numbers
+fib_sequence = [fibonacci(i) for i in range(10)]
+print(f"Fibonacci: {fib_sequence}")
+```
+
+### 2. DevPaper Typeset Output (Generated via API)
+<p align="center">
+  <img src="public/examples/fibonacci.svg" alt="DevPaper Typeset Fibonacci Code Snippet" width="620" />
+</p>
+
+*✨ Crisp JetBrains Mono typography, Tokyo Night syntax highlighting, Cosmic Sunset gradient, macOS traffic lights, gutter line numbers, and soft drop shadow — available as vector SVG, Retina PNG, or multi-page PDF.*
+
+---
+
 ## 🌐 Public API & Subsystems Overview
 
 DevPaper exposes four clearly-defined public interfaces:
@@ -141,6 +167,38 @@ payload = {
 response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
 with open("greet.svg", "wb") as f:
     f.write(response.content)
+```
+
+#### 📁 Direct File Input (No Copy-Pasting Required!)
+Instead of copying and pasting or escaping multi-line code into JSON strings, you can pass any local file path directly (e.g. `main.py`, `samplegreet.ts`, `index.html`) via `"code"` or `"file_path"`. The API will read, format, and auto-detect the language from disk:
+
+```python
+import requests
+
+payload = {
+    "code": "samplegreet.ts",      # Pass any file path directly! (or "file_path": "main.py")
+    "language": "typescript",
+    "file_name": "greet.ts",
+    "theme": "one-dark-pro",
+    "background": "cosmic-sunset",
+    "format": "pdf"                # Generates a vector PDF directly from the file!
+}
+
+response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
+with open("greet.pdf", "wb") as f:
+    f.write(response.content)
+```
+
+#### 📤 Direct Multipart File Upload (`POST /api/v1/snippet/upload`)
+You can also upload source files directly using standard multipart form-data:
+
+```bash
+# Upload a file via curl and get a vector PDF:
+curl -X POST http://localhost:8000/api/v1/snippet/upload \
+  -F "file=@main.py" \
+  -F "theme=tokyo-night" \
+  -F "format=pdf" \
+  --output main.pdf
 ```
 
 #### Example JavaScript / TypeScript (`fetch`)
@@ -381,16 +439,21 @@ The API starts at [http://localhost:8000](http://localhost:8000) (Interactive Sw
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & API Runner
 
-DevPaper features automated test suites across both TypeScript and Python:
+DevPaper features automated test suites across both TypeScript and Python, plus a standalone API test runner:
 
 ```bash
-# Run Vitest unit tests (Frontend & Core Engines)
+# 1. Run Vitest unit tests (Frontend & Core Engines)
 npm test
 
-# Run Python backend test suite (FastAPI, Pygments, ReportLab)
+# 2. Run Python backend test suite (FastAPI, Pygments, ReportLab)
 npm run test:backend
+
+# 3. Interactive API Test Script (Generates sample code, runs API, downloads PDF/SVG)
+python apitest.py
+# Or test with any file on your computer:
+python apitest.py main.py
 ```
 
 ---

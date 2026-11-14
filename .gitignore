@@ -39,3 +39,9 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+
+# temporary test outputs
+delete-later/
+greet.pdf
+greet.svg
+samplegreet.ts
