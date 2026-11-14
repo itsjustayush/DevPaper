@@ -156,7 +156,15 @@ async def create_snippet(req: SnippetRequest):
             file_name=clean_filename,
             theme_id=req.theme or "tokyo-night",
             paper_size_id=req.paper_size or "a4",
-            watermark=req.watermark or "DevPaper Studio",
+            frame_style=req.frame or "macos",
+            font_id=req.font or "jetbrains-mono",
+            background_id=req.background,
+            watermark=req.watermark or "DevPaper Typesetting Studio",
+            show_line_numbers=req.show_line_numbers if req.show_line_numbers is not None else True,
+            start_line_number=req.start_line_number or 1,
+            highlight_lines=req.highlight_lines or [],
+            border_radius=req.border_radius or 12,
+            padding=req.padding or 32,
         )
         return Response(
             content=pdf_bytes,
@@ -232,7 +240,11 @@ async def upload_file_snippet(
             file_name=file_name,
             theme_id=theme,
             paper_size_id=paper_size,
-            watermark="DevPaper Studio",
+            frame_style=frame,
+            font_id=font,
+            background_id=background,
+            watermark="DevPaper Typesetting Studio",
+            show_line_numbers=show_line_numbers,
         )
         return Response(
             content=pdf_bytes,
@@ -335,7 +347,11 @@ async def create_multi_file_bundle(req: MultiFileRequest):
             file_name=archive_name,
             theme_id=req.theme or "tokyo-night",
             paper_size_id=req.paper_size or "a4",
-            watermark=req.watermark or "DevPaper Studio",
+            frame_style=req.frame or "macos",
+            font_id=req.font or "jetbrains-mono",
+            background_id=req.background,
+            watermark=req.watermark or "DevPaper Typesetting Studio",
+            show_line_numbers=req.show_line_numbers if req.show_line_numbers is not None else True,
         )
         return Response(
             content=pdf_bytes,

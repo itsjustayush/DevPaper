@@ -35,3 +35,4 @@ with open(out_path, "w", encoding="utf-8") as f:
     f.write(svg)
 
 print(f"✓ Generated {out_path} ({len(svg)} bytes)")
+
