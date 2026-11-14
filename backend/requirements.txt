@@ -3,7 +3,7 @@ uvicorn[standard]>=0.32.0
 pygments>=2.18.0
 pydantic>=2.9.0
 reportlab>=4.2.5
-pillow>=11.0.0
+pillow>=13.0.0
 python-multipart>=0.0.12
 
 requests>=2.31.0
