@@ -1,8 +1,13 @@
 """
 DevPaper API Test Script (apitest.py)
 
-Demonstrates how to write/rewrite code to any local file (e.g., samplegreet.ts, main.py, index.html)
-and pass the file directly to DevPaper API without manual copy-pasting.
+Demonstrates how developers and AI agents can programmatically typeset code directly from local files
+(e.g., samplegreet.ts, main.py, index.html) with zero manual copy-pasting.
+
+Workspace Convention:
+  DevPaper has no cloud storage facility; no user code is ever saved to the cloud.
+  For programmatic usage, all generated artifacts (.pdf, .svg, .png, .zip) are automatically
+  downloaded and saved into the `/devpaper` directory in the root of the workspace.
 
 Usage:
     python apitest.py [optional_file_path]
@@ -13,6 +18,11 @@ import os
 import requests
 
 API_BASE_URL = os.environ.get("DEVPAPER_API_URL", "http://localhost:8000")
+
+# Programmatic Workspace Output Directory (/devpaper)
+WORKSPACE_ROOT = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(WORKSPACE_ROOT, "devpaper")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def is_server_online(url: str) -> bool:
     """Checks if the local DevPaper server is responding."""
@@ -62,6 +72,8 @@ def run_tests():
         print(f"✓ Using source file: '{target_file}'")
 
     online = is_server_online(API_BASE_URL)
+    pdf_out = os.path.join(OUTPUT_DIR, "greet.pdf")
+    svg_out = os.path.join(OUTPUT_DIR, "greet.svg")
 
     if online:
         print(f"\n[Mode: Live HTTP Server] Connected to {API_BASE_URL}")
@@ -77,9 +89,9 @@ def run_tests():
         }
         res = requests.post(endpoint, json=payload, timeout=10)
         assert res.status_code == 200, f"Error {res.status_code}: {res.text}"
-        with open("greet.pdf", "wb") as f:
+        with open(pdf_out, "wb") as f:
             f.write(res.content)
-        print(f"✓ [JSON File Path] Generated 'greet.pdf' ({len(res.content)} bytes)")
+        print(f"✓ [JSON File Path] Generated '{pdf_out}' ({len(res.content)} bytes)")
 
         # Test 2: Multipart Upload
         upload_endpoint = f"{API_BASE_URL}/api/v1/snippet/upload"
@@ -88,9 +100,9 @@ def run_tests():
             data = {"theme": "tokyo-night", "format": "svg"}
             res2 = requests.post(upload_endpoint, files=files, data=data, timeout=10)
         assert res2.status_code == 200, f"Error {res2.status_code}: {res2.text}"
-        with open("greet.svg", "wb") as f:
+        with open(svg_out, "wb") as f:
             f.write(res2.content)
-        print(f"✓ [Multipart Upload] Generated 'greet.svg' ({len(res2.content)} bytes)")
+        print(f"✓ [Multipart Upload] Generated '{svg_out}' ({len(res2.content)} bytes)")
 
     else:
         print(f"\n[Mode: Direct FastAPI TestClient] (Server offline at {API_BASE_URL})")
@@ -112,9 +124,9 @@ def run_tests():
         }
         res = client.post("/api/v1/snippet", json=payload)
         assert res.status_code == 200, f"Error {res.status_code}: {res.text}"
-        with open("greet.pdf", "wb") as f:
+        with open(pdf_out, "wb") as f:
             f.write(res.content)
-        print(f"✓ [JSON File Path] Generated 'greet.pdf' ({len(res.content)} bytes)")
+        print(f"✓ [JSON File Path] Generated '{pdf_out}' ({len(res.content)} bytes)")
 
         # Test 2: Multipart Upload
         with open(target_file, "rb") as f:
@@ -122,12 +134,14 @@ def run_tests():
             data = {"theme": "tokyo-night", "format": "svg"}
             res2 = client.post("/api/v1/snippet/upload", files=files, data=data)
         assert res2.status_code == 200, f"Error {res2.status_code}: {res2.text}"
-        with open("greet.svg", "wb") as f:
+        with open(svg_out, "wb") as f:
             f.write(res2.content)
-        print(f"✓ [Multipart Upload] Generated 'greet.svg' ({len(res2.content)} bytes)")
+        print(f"✓ [Multipart Upload] Generated '{svg_out}' ({len(res2.content)} bytes)")
 
     print("\n✓ DevPaper API test routine completed successfully!")
-    print(f"  Generated outputs: '{os.path.abspath('greet.pdf')}' and '{os.path.abspath('greet.svg')}'")
+    print(f"  All outputs saved into workspace directory: '{OUTPUT_DIR}'")
+    print(f"  • {pdf_out}")
+    print(f"  • {svg_out}")
 
 if __name__ == "__main__":
     run_tests()

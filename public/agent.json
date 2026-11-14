@@ -5,6 +5,8 @@
   "author": "Ayush (@itsjustayush)",
   "license": "MIT",
   "auth": "none",
+  "storage": "none (zero cloud retention, in-memory ephemeral)",
+  "workspace_output_dir": "devpaper/",
   "base_url": "http://localhost:8000",
   "root_url": "https://devpaper-code.vercel.app",
   "documentation_url": "https://devpaper-code.vercel.app/agent",

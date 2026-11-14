@@ -22,6 +22,10 @@ import { render_svg_client_preview } from './clientPreview';
 
 const AGENT_SYSTEM_PROMPT = `You have access to the DevPaper Headless Typesetting API to generate high-polish code snippet images (SVG, PNG) and multi-page printable documents (PDF, ZIP).
 
+### Privacy & Cloud Policy:
+- Zero Cloud Storage: DevPaper does NOT store, track, or save any user code on the cloud. Everything is processed 100% in-memory or client-side.
+- Workspace Output Convention: When generating, downloading, or saving any DevPaper artifact (.pdf, .svg, .png, .zip), ALWAYS save it into the \`/devpaper\` directory at the root of the workspace (./devpaper/<file_name>.<ext>).
+
 ### Base URL & Hosted Studio:
 - Live Web App: https://devpaper-code.vercel.app
 - Agent Specification: https://devpaper-code.vercel.app/ai.txt | https://devpaper-code.vercel.app/agent.json
@@ -29,7 +33,7 @@ const AGENT_SYSTEM_PROMPT = `You have access to the DevPaper Headless Typesettin
 - Zero authentication or API keys required.
 
 ### When to Use DevPaper:
-1. Documentation & READMEs: Whenever creating or enhancing a repository README, generate a vector SVG snippet hero banner.
+1. Documentation & READMEs: Whenever creating or enhancing a repository README, generate a vector SVG snippet hero banner into ./devpaper/.
 2. Architecture / API Guides: Typeset code examples into crisp images or multi-page PDF documents for users.
 3. Bug Reports & PR Reviews: Create visual before/after code comparisons with diff markers ('+' or '-').
 4. Code Bundling: When packaging multiple files, generate a clean ZIP archive with both source and rendered images.
@@ -40,7 +44,7 @@ Content-Type: application/json
 
 Payload:
 {
-  "code": "<source code string>",
+  "code": "<source code string or file_path>",
   "language": "python" | "typescript" | "rust" | "go" | "auto",
   "file_name": "example.py",
   "theme": "tokyo-night" | "one-dark-pro" | "dracula" | "catppuccin" | "nord" | "github-dark",
@@ -118,14 +122,19 @@ export default function AgentDocsPage() {
       2
     );
 
-    return `curl -X POST http://localhost:8000/api/v1/snippet \\
+    return `mkdir -p devpaper
+curl -X POST http://localhost:8000/api/v1/snippet \\
   -H "Content-Type: application/json" \\
   -d '${payload.replace(/'/g, "'\\''")}' \\
-  --output ${fileName.replace(/\.[^/.]+$/, '')}.svg`;
+  --output devpaper/${fileName.replace(/\.[^/.]+$/, '')}.svg`;
   }, [code, language, fileName, theme, background, frame, showLineNumbers]);
 
   const pythonSnippet = useMemo(() => {
-    return `import requests
+    return `import os
+import requests
+
+# Ensure /devpaper directory exists in workspace root
+os.makedirs("devpaper", exist_ok=True)
 
 payload = {
     "code": """${code}""",
@@ -137,10 +146,11 @@ payload = {
 }
 
 response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
-with open("${fileName.replace(/\.[^/.]+$/, '')}.svg", "wb") as f:
+output_path = os.path.join("devpaper", "${fileName.replace(/\.[^/.]+$/, '')}.svg")
+with open(output_path, "wb") as f:
     f.write(response.content)
 
-print("Snippet saved successfully!")`;
+print(f"✓ Snippet saved successfully to: {output_path}")`;
   }, [code, language, fileName, theme, background]);
 
   return (
@@ -190,6 +200,26 @@ print("Snippet saved successfully!")`;
           <p className="text-sm sm:text-base text-zinc-400 max-w-3xl leading-relaxed">
             Empower AI coding agents, GitHub Actions, and command-line scripts to generate beautiful code images (SVG, PNG), multi-page printable documents (PDF), and bundled archives (ZIP) with zero authentication or API keys.
           </p>
+        </div>
+
+        {/* Zero Storage & Workspace Directory Notice */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-950/70 text-xs">
+          <div className="space-y-1">
+            <span className="font-semibold text-emerald-400 flex items-center gap-1.5">
+              <span>🛡️</span> Zero Cloud Storage Guarantee
+            </span>
+            <p className="text-zinc-400 leading-relaxed">
+              DevPaper has no cloud storage facility. None of the code is saved on the cloud. Web studio exports are completely ephemeral; API requests process in-memory (<code className="text-zinc-300">io.BytesIO</code>).
+            </p>
+          </div>
+          <div className="space-y-1">
+            <span className="font-semibold text-cyan-400 flex items-center gap-1.5">
+              <span>📂</span> Workspace Output Convention (<code className="text-emerald-300">/devpaper</code>)
+            </span>
+            <p className="text-zinc-400 leading-relaxed">
+              For programmatic usage and AI agents, all generated or downloaded files are organized into a <code className="text-emerald-400 font-mono">/devpaper</code> folder at the root of the workspace.
+            </p>
+          </div>
         </div>
 
         {/* Section 1: Pre-Made AI Agent System Prompt */}

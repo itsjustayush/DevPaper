@@ -5,6 +5,10 @@
 DevPaper is an open, zero-auth, high-performance code presentation and typesetting engine.
 AI agents can call this API to generate beautiful code images (SVG, PNG, PDF, ZIP) for documentation, README hero banners, code review comments, and multi-page technical manuals.
 
+## 0. Zero Cloud Storage & Workspace Output Convention
+- ZERO CLOUD RETENTION: DevPaper does NOT store or persist any code on the cloud. All operations are ephemeral and processed in-memory (or 100% client-side in the browser).
+- WORKSPACE DIRECTORY: When an AI agent generates, downloads, or outputs any DevPaper artifact (.pdf, .svg, .png, .zip), ALWAYS save it into the `./devpaper/` directory in the root of the workspace (e.g. `./devpaper/<filename>.<ext>`). Create the directory if it does not exist.
+
 ## 1. Endpoints Overview (Base URL: http://localhost:8000 or production host)
 
 - POST /api/v1/snippet -> Typesets a single code block into an SVG, PDF, or HTML.
@@ -41,10 +45,11 @@ Frames: "macos", "macos-outline", "macos-monochrome", "windows", "terminal", "mi
 
 Example cURL:
 ```bash
+mkdir -p devpaper
 curl -X POST http://localhost:8000/api/v1/snippet \
   -H "Content-Type: application/json" \
   -d '{"code":"const add = (a, b) => a + b;","language":"typescript","file_name":"math.ts","format":"svg"}' \
-  --output math.svg
+  --output devpaper/math.svg
 ```
 
 ## 3. Direct Markdown/README Image URL (GET /api/v1/snippet)

@@ -45,3 +45,7 @@ delete-later/
 greet.pdf
 greet.svg
 samplegreet.ts
+
+# DevPaper programmatic export output directory
+/devpaper/
+devpaper/

@@ -101,6 +101,23 @@ The DevPaper Headless API runs on Python (FastAPI + Pygments + ReportLab) with *
 
 ---
 
+### 🛡️ Zero Cloud Storage & Complete Privacy Guarantee
+
+DevPaper has **no cloud storage facility**:
+* **Web Users**: Runs **100% client-side in your browser** using local DOM canvas and client engines. It is an ephemeral, one-time session; your code is never uploaded, tracked, or stored on any remote database or cloud server. Users download and export files locally on their device.
+* **Programmatic & API Users**: The headless backend processes code **100% in-memory** using streaming buffers (`io.BytesIO`). Once the HTTP response stream is returned, no copies, logs, or snippets are persisted on the server.
+
+---
+
+### 📂 Programmatic Workspace Output Convention (`/devpaper`)
+
+For developers, CLI scripts, and AI agents invoking DevPaper programmatically:
+* All generated and downloaded files of any format (`.pdf`, `.svg`, `.png`, `.zip`, `.html`) are saved into a dedicated **`/devpaper`** folder located at the root of your workspace (`./devpaper/<file_name>.<ext>`).
+* This convention keeps code repositories clean and organizes all typeset documentation assets into one predictable location.
+* Make sure `devpaper/` is added to your project's `.gitignore` if you do not wish to track generated export artifacts in Git.
+
+---
+
 ### 1. Generate Single Snippet (`POST /api/v1/snippet`)
 
 Converts a code snippet into a high-polish, vector-crisp standalone file.
@@ -137,6 +154,8 @@ Binary stream with `Content-Disposition: attachment; filename="<file_name>.<form
 
 #### Example cURL
 ```bash
+# Save to the /devpaper workspace directory:
+mkdir -p devpaper
 curl -X POST http://localhost:8000/api/v1/snippet \
   -H "Content-Type: application/json" \
   -d '{
@@ -148,12 +167,15 @@ curl -X POST http://localhost:8000/api/v1/snippet \
     "frame": "macos",
     "format": "svg"
   }' \
-  --output quicksort.svg
+  --output devpaper/quicksort.svg
 ```
 
 #### Example Python (`requests`)
 ```python
+import os
 import requests
+
+os.makedirs("devpaper", exist_ok=True)
 
 payload = {
     "code": "const greet = (name: string): string => `Hello, ${name}!`;",
@@ -165,7 +187,7 @@ payload = {
 }
 
 response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
-with open("greet.svg", "wb") as f:
+with open("devpaper/greet.svg", "wb") as f:
     f.write(response.content)
 ```
 
@@ -173,7 +195,10 @@ with open("greet.svg", "wb") as f:
 Instead of copying and pasting or escaping multi-line code into JSON strings, you can pass any local file path directly (e.g. `main.py`, `samplegreet.ts`, `index.html`) via `"code"` or `"file_path"`. The API will read, format, and auto-detect the language from disk:
 
 ```python
+import os
 import requests
+
+os.makedirs("devpaper", exist_ok=True)
 
 payload = {
     "code": "samplegreet.ts",      # Pass any file path directly! (or "file_path": "main.py")
@@ -185,7 +210,7 @@ payload = {
 }
 
 response = requests.post("http://localhost:8000/api/v1/snippet", json=payload)
-with open("greet.pdf", "wb") as f:
+with open("devpaper/greet.pdf", "wb") as f:
     f.write(response.content)
 ```
 
@@ -193,12 +218,13 @@ with open("greet.pdf", "wb") as f:
 You can also upload source files directly using standard multipart form-data:
 
 ```bash
-# Upload a file via curl and get a vector PDF:
+# Upload a file via curl and get a vector PDF in devpaper/:
+mkdir -p devpaper
 curl -X POST http://localhost:8000/api/v1/snippet/upload \
   -F "file=@main.py" \
   -F "theme=tokyo-night" \
   -F "format=pdf" \
-  --output main.pdf
+  --output devpaper/main.pdf
 ```
 
 #### Example JavaScript / TypeScript (`fetch`)
@@ -296,6 +322,8 @@ microservice-bundle.zip
 
 #### Example cURL
 ```bash
+# Save bundle into the /devpaper directory:
+mkdir -p devpaper
 curl -X POST http://localhost:8000/api/v1/files \
   -H "Content-Type: application/json" \
   -d '{
@@ -306,7 +334,7 @@ curl -X POST http://localhost:8000/api/v1/files \
     "format": "zip",
     "archive_name": "ts-types-bundle"
   }' \
-  --output bundle.zip
+  --output devpaper/bundle.zip
 ```
 
 ---
