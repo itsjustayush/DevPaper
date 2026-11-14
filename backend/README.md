@@ -53,9 +53,9 @@ uv pip install -r requirements.txt
 python run.py
 ```
 
-The server starts at `http://localhost:8000`.
-- Interactive Swagger docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Alternative ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+The canonical API is hosted at `https://devpaper-code.vercel.app`.
+- Interactive Swagger docs: [https://devpaper-code.vercel.app/docs](https://devpaper-code.vercel.app/docs)
+- Alternative ReDoc: [https://devpaper-code.vercel.app/redoc](https://devpaper-code.vercel.app/redoc)
 
 ### 4. Run Test Suite
 

@@ -21,7 +21,7 @@ body:
       label: Steps to Reproduce
       description: What steps do we take to observe the issue?
       placeholder: |
-        1. Open DevPaper studio at http://localhost:3000
+        1. Open DevPaper studio at https://devpaper-code.vercel.app
         2. Paste sample code with 200 lines
         3. Switch format to A4 Portrait
         4. Click Export -> PDF

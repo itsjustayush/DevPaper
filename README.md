@@ -61,7 +61,7 @@ print(f"Fibonacci: {fib_sequence}")
 
 DevPaper exposes four clearly-defined public interfaces:
 
-1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `https://devpaper-code.vercel.app` (and locally at `http://localhost:8000`) for generating vector SVG, PDF, or ZIP packages.
+1. **Headless REST API (FastAPI)**: Serves zero-auth endpoints at `https://devpaper-code.vercel.app` for generating vector SVG, PDF, or ZIP packages.
 2. **AI Agent Specifications & Hub**:
    - Live Studio & Hub: [https://devpaper-code.vercel.app/agent](https://devpaper-code.vercel.app/agent)
    - Plaintext Prompt Directive: [`https://devpaper-code.vercel.app/ai.txt`](https://devpaper-code.vercel.app/ai.txt)
@@ -82,7 +82,7 @@ DevPaper exposes four clearly-defined public interfaces:
 
 The DevPaper Headless API runs on Python (FastAPI + Pygments + ReportLab) with **zero authentication required** and **CORS enabled (`*`)**, making it effortlessly callable by local CLI scripts, web apps, and AI coding agents.
 
-* **Base URL**: `https://devpaper-code.vercel.app` (or your local microservice)
+* **Base URL**: `https://devpaper-code.vercel.app`
 * **Interactive Docs**: [https://devpaper-code.vercel.app/docs](https://devpaper-code.vercel.app/docs) (Swagger UI) / [https://devpaper-code.vercel.app/redoc](https://devpaper-code.vercel.app/redoc) (ReDoc)
 * **Auth**: None required (open public endpoints)
 
@@ -446,7 +446,7 @@ npm install
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to open DevPaper Studio locally.
+Visit [https://devpaper-code.vercel.app](https://devpaper-code.vercel.app) to open DevPaper Studio.
 
 ### 2. Headless Python Backend
 
@@ -463,7 +463,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-The API runs at [https://devpaper-code.vercel.app](https://devpaper-code.vercel.app) (and locally at [http://localhost:8000](http://localhost:8000); Interactive Swagger docs: `/docs`).
+The API runs at [https://devpaper-code.vercel.app](https://devpaper-code.vercel.app) (Interactive Swagger docs: [https://devpaper-code.vercel.app/docs](https://devpaper-code.vercel.app/docs)).
 
 ---
 

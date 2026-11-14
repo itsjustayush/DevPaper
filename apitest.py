@@ -74,7 +74,7 @@ def run_tests():
     pdf_out = os.path.join(OUTPUT_DIR, "greet.pdf")
     svg_out = os.path.join(OUTPUT_DIR, "greet.svg")
 
-    active_url = API_BASE_URL if is_server_online(API_BASE_URL) else ("http://localhost:8000" if is_server_online("http://localhost:8000") else None)
+    active_url = API_BASE_URL if is_server_online(API_BASE_URL) else None
 
     if active_url:
         print(f"\n[Mode: Live HTTP Server] Connected to {active_url}")
